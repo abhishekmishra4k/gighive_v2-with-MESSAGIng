@@ -149,7 +149,6 @@ export function StudentSidebar({ user, onLogout }) {
                 <Bell size={16} />
               </Button>
             </div>
-    _`jsx
         </div>
         )}
 

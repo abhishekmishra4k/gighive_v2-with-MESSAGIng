@@ -18,7 +18,7 @@ export function StudentDashboard({ user, onLogout }) {
       
       <main className="flex-1 overflow-auto">
         <Routes>
-          <Route path="/" element={<Navigate to="/student-dashboard/dashboard" />} />
+          <Route path="/" element={<Navigate to="/student-dashboard/find-gigs" />} />
           <Route path="/dashboard" element={<Dashboard user={user} />} />
           <Route path="/find-gigs" element={<FindGigs user={user} />} />
           <Route path="/gig-reels" element={<GigReels user={user} />} />

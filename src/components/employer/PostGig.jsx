@@ -17,8 +17,8 @@ export function PostGig() {
     description: '',
     category: '',
     skills: [],
-    budget: '',
-    budgetType: 'fixed',
+    pay: '',
+    payType: 'fixed',
     duration: '',
     location: '',
     type: '',
@@ -109,7 +109,13 @@ try {
     const payload = {
       ...formData,
       skills: selectedSkills,
+      pay: {
+        type: formData.payType,
+        amount: formData.payType === 'hourly' ? `${formData.pay}/hour` : formData.pay
+      }
     };
+
+    console.log('form=========data==========',payload)
 
     try {
       console.log('Sending token:', token);
@@ -132,8 +138,8 @@ try {
           description: '',
           category: '',
           skills: [],
-          budget: '',
-          budgetType: 'fixed',
+          pay: '',
+          payType: 'fixed',
           duration: '',
           location: '',
           type: '',
@@ -322,12 +328,12 @@ try {
 
           <div>
             <label className="block text-sm font-medium mb-2">
-              Pay ({formData.budgetType === 'hourly' ? 'per hour' : 'total'}) *
+              Pay ({formData.payType === 'hourly' ? 'per hour' : 'total'}) *
             </label>
             <Input
               type="number"
-              value={formData.budget}
-              onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+              value={formData.pay}
+              onChange={(e) => setFormData({ ...formData, pay: e.target.value })}
               placeholder={formData.payType === 'hourly' ? '₹250' : '₹5000'} // ✅ INR placeholders
               required
             />

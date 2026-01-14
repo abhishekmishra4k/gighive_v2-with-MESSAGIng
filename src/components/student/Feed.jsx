@@ -10,7 +10,7 @@ export function Feed() {
   useEffect(() => {
     const fetchFeed = async () => {
       try {
-        const res = await fetch('/api/gigs');
+        const res = await fetch('http://localhost:5001/api/gigs');
         const data = await res.json();
         setPosts(
           data.map(gig => ({
@@ -19,8 +19,8 @@ export function Feed() {
             time: new Date(gig.createdAt).toLocaleString(),
             content: gig.description,
             image: null,
-            likes: gig.likes.length,
-            comments: gig.comments.length
+            likes: gig.likes?.length || 0,
+            comments: gig.comments?.length || 0
           }))
         );
       } catch (err) {
@@ -28,8 +28,7 @@ export function Feed() {
       }
     };
 
-    // fetchFeed();
-    fetchGigs();
+    fetchFeed();
   }, []);
 
   return (

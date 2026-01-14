@@ -27,11 +27,7 @@ import  EmployerDashboard  from './components/dashboards/EmployerDashboard';
 import { AdminDashboard } from './components/dashboards/AdminDashboard';
 
 export default function App() {
-  const [user, setUser] = useState(null);
-  const [userType, setUserType] = useState(null);
-
-  // Restore user from localStorage on reload
-  useEffect(() => {
+  const [user, setUser] = useState(() => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     const id = localStorage.getItem('userId');
@@ -39,10 +35,12 @@ export default function App() {
     const email = localStorage.getItem('userEmail');
 
     if (token && role) {
-      setUser({ token, id, name, email, role });
-      setUserType(role);
+      return { token, id, name, email, role };
     }
-  }, []);
+    return null;
+  });
+
+  const [userType, setUserType] = useState(() => localStorage.getItem('role'));
 
   const handleLogin = (userData, type) => {
     setUser(userData);
