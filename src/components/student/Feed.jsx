@@ -15,7 +15,7 @@ export function Feed() {
         setPosts(
           data.map(gig => ({
             type: 'employer',
-            author: gig.employer?.name || 'Unknown',
+            company: gig.company || "Unknown",
             time: new Date(gig.createdAt).toLocaleString(),
             content: gig.description,
             image: null,
@@ -45,11 +45,11 @@ export function Feed() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center">
                   <span className="font-semibold text-sm">
-                    {post.author.split(' ').map(n => n[0]).join('')}
+                    {post.company.split(' ').map(n => n[0]).join('')}
                   </span>
                 </div>
                 <div>
-                  <h4 className="font-medium">{post.author}</h4>
+                  <h4 className="font-medium">{post.company}</h4>
                   <p className="text-sm text-muted-foreground">{post.time}</p>
                 </div>
                 <Badge variant="secondary" className="ml-auto">
