@@ -13,13 +13,14 @@ const gigSchema = new mongoose.Schema({
     amount: String // e.g., "$800-1200", "$500", "$15/hour"
   },
   status: { type: String, enum: ['open', 'in-progress', 'closed'], default: 'open' },
-   applications: [{
+  applications: [{
     student: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
     message: { type: String },
     appliedAt: { type: Date, default: Date.now },
     status: { type: String, enum: ['pending', 'shortlisted', 'hired', 'declined'], default: 'pending' },
-}],
+  }],
 
+  company: { type: String, default: null },
 
   applicants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
   featured: { type: Boolean, default: false },
