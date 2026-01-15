@@ -158,7 +158,7 @@ export function EmployerSidebar({ user, onLogout }) {
               }`}
             >
               <LogOut size={20} />
-              {!collapsed && <span className="flex-1">Logout</span>}
+              {!collapsed && <span>Logout</span>}
             </Button>
           </div>
         </nav>
