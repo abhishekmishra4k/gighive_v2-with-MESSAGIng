@@ -205,32 +205,40 @@ import {
   Zap,
 } from "lucide-react";
 
+import { toast } from "react-toastify";
+
 export function FindGigs({ user }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [gigs, setGigs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedGig, setSelectedGig] = useState(null);
   const [applicationMessage, setApplicationMessage] = useState("");
-const handleApply = async (gigId) => {
-  try {
-    await axios.post(`http://localhost:5001/api/gigs/${gigId}/apply`, {
-      message: applicationMessage,   // ✅ student's description
-    }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+  const handleApply = async (gigId) => {
+    try {
+      await axios.post(
+        `http://localhost:5001/api/gigs/${gigId}/apply`,
+        {
+          message: applicationMessage, // ✅ student's description
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-    alert("Application submitted!");
-    setApplicationMessage("");
-    setSelectedGig(null);
-  } catch (err) {
-    console.error("Apply error:", err);
-    alert("Something went wrong. Please try again.");
-  }
-};
-
-
+      toast.success("Application submitted!");
+      setApplicationMessage("");
+      setSelectedGig(null);
+    } catch (err) {
+      console.error("Apply error:", err);
+      const errorMessage =
+        err.response?.data?.msg ||
+        err.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      toast.error(errorMessage);
+    }
+  };
 
   // 🔄 Fetch gigs from backend
   useEffect(() => {
@@ -238,7 +246,6 @@ const handleApply = async (gigId) => {
       try {
         const res = await fetch("http://localhost:5001/api/gigs");
         const data = await res.json();
-        console.log('gigs============',data)
         setGigs(data);
       } catch (err) {
         console.error("❌ Failed to fetch gigs:", err);
@@ -269,7 +276,7 @@ const handleApply = async (gigId) => {
     <div className="min-h-screen bg-[#f8fbff] p-4 md:p-8">
       {/* Header Section */}
       <div className="max-w-4xl mx-auto mb-10">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-col items-center justify-center text-center gap-6">
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
               Find Gigs
@@ -293,7 +300,10 @@ const handleApply = async (gigId) => {
               className="h-14 pl-12 rounded-2xl border-slate-200 bg-white shadow-sm focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all text-lg"
             />
           </div>
-          <Button variant="outline" className="h-14 px-8 rounded-2xl border-slate-200 bg-white font-semibold text-slate-700 hover:bg-slate-50">
+          <Button
+            variant="outline"
+            className="h-14 px-8 rounded-2xl border-slate-200 bg-white font-semibold text-slate-700 hover:bg-slate-50"
+          >
             <Filter size={20} className="mr-2" />
             Filters
           </Button>
@@ -301,15 +311,17 @@ const handleApply = async (gigId) => {
 
         {/* Quick Filter Pills */}
         <div className="flex gap-3 mt-6 overflow-x-auto pb-2 scrollbar-hide">
-          {["Remote", "Part-time", "Tech", "Design", "Urgent", "High Pay"].map((filter) => (
-            <Badge
-              key={filter}
-              variant="secondary"
-              className="px-5 py-2.5 rounded-full bg-white border border-slate-200 text-slate-600 font-semibold cursor-pointer hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all whitespace-nowrap"
-            >
-              {filter}
-            </Badge>
-          ))}
+          {["Remote", "Part-time", "Tech", "Design", "Urgent", "High Pay"].map(
+            (filter) => (
+              <Badge
+                key={filter}
+                variant="secondary"
+                className="px-5 py-2.5 rounded-full bg-white border border-slate-200 text-slate-600 font-semibold cursor-pointer hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all whitespace-nowrap"
+              >
+                {filter}
+              </Badge>
+            )
+          )}
         </div>
       </div>
 
@@ -319,7 +331,10 @@ const handleApply = async (gigId) => {
           {loading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-64 bg-slate-200/50 animate-pulse rounded-3xl" />
+                <div
+                  key={i}
+                  className="h-64 bg-slate-200/50 animate-pulse rounded-3xl"
+                />
               ))}
             </div>
           ) : filteredGigs.length === 0 ? (
@@ -327,18 +342,26 @@ const handleApply = async (gigId) => {
               <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search size={32} className="text-slate-300" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">No Gigs Found</h3>
-              <p className="text-slate-500">Try adjusting your search or filters to find more opportunities.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                No Gigs Found
+              </h3>
+              <p className="text-slate-500">
+                Try adjusting your search or filters to find more opportunities.
+              </p>
             </div>
           ) : (
             filteredGigs.map((gig) => {
               const id = gig._id || gig.id;
               const isExpanded = !!expanded[id];
               const desc = gig.description || "";
-              const shortDesc = desc.length > 200 ? desc.slice(0, 200) + "..." : desc;
+              const shortDesc =
+                desc.length > 200 ? desc.slice(0, 200) + "..." : desc;
 
               return (
-                <Card key={id} className="group relative bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <Card
+                  key={id}
+                  className="group relative bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
+                >
                   <CardContent className="p-8">
                     {/* Top Row: Urgent Badge */}
                     <div className="flex justify-between items-start mb-6">
@@ -349,7 +372,11 @@ const handleApply = async (gigId) => {
                           </div>
                         )}
                       </div>
-                      <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100 -mt-2 -mr-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-full hover:bg-slate-100 -mt-2 -mr-2"
+                      >
                         <Bookmark size={20} />
                       </Button>
                     </div>
@@ -366,7 +393,7 @@ const handleApply = async (gigId) => {
                           </div>
                           {gig.company || "Unknown Company"}
                         </div>
-                        
+
                         <div className="text-slate-600 text-sm leading-relaxed mb-6">
                           {isExpanded ? desc : shortDesc}
                           {desc.length > 200 && (
@@ -384,32 +411,48 @@ const handleApply = async (gigId) => {
                           <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
                             <div className="flex items-center gap-2 text-slate-400 mb-1">
                               <MapPin size={14} />
-                              <span className="text-[10px] font-bold uppercase tracking-wider">Location</span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider">
+                                Location
+                              </span>
                             </div>
-                            <p className="text-sm font-bold text-slate-800 line-clamp-1">{gig.location}</p>
+                            <p className="text-sm font-bold text-slate-800 line-clamp-1">
+                              {gig.location}
+                            </p>
                           </div>
                           <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
                             <div className="flex items-center gap-2 text-slate-400 mb-1">
                               <Clock size={14} />
-                              <span className="text-[10px] font-bold uppercase tracking-wider">Duration</span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider">
+                                Duration
+                              </span>
                             </div>
-                            <p className="text-sm font-bold text-slate-800 line-clamp-1">{gig.duration}</p>
+                            <p className="text-sm font-bold text-slate-800 line-clamp-1">
+                              {gig.duration}
+                            </p>
                           </div>
                           <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
                             <div className="flex items-center gap-2 text-slate-400 mb-1">
                               ₹
-                              <span className="text-[10px] font-bold uppercase tracking-wider">PAYMENT</span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider">
+                                PAYMENT
+                              </span>
                             </div>
                             <p className="text-sm font-bold text-slate-800 line-clamp-1">
-                              {typeof gig.pay === 'object' ? gig.pay?.amount : gig.pay}
+                              {typeof gig.pay === "object"
+                                ? gig.pay?.amount
+                                : gig.pay}
                             </p>
                           </div>
                           <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
                             <div className="flex items-center gap-2 text-slate-400 mb-1">
                               <Star size={14} />
-                              <span className="text-[10px] font-bold uppercase tracking-wider">Credits</span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider">
+                                Credits
+                              </span>
                             </div>
-                            <p className="text-sm font-bold text-slate-900">{gig.credits || 0}</p>
+                            <p className="text-sm font-bold text-slate-900">
+                              {gig.credits || 0}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -418,14 +461,14 @@ const handleApply = async (gigId) => {
                     {/* Bottom Row */}
                     <div className="flex items-center justify-end pt-6 border-t border-slate-100">
                       <div className="flex gap-3">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           onClick={() => setSelectedGig(gig)}
                           className="rounded-xl border-slate-200 text-slate-700 font-bold hover:bg-slate-50"
                         >
                           View Details
                         </Button>
-                        <Button 
+                        <Button
                           onClick={() => setSelectedGig(gig)}
                           className="rounded-xl bg-slate-900 hover:bg-black text-white font-bold px-6 shadow-md transition-all active:scale-[0.98]"
                         >
@@ -476,19 +519,29 @@ const handleApply = async (gigId) => {
             <div className="flex-1 overflow-y-auto p-8 pt-0 scrollbar-hide">
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Pay rate</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                    Pay rate
+                  </p>
                   <p className="text-lg font-bold text-slate-900">
-                    {typeof selectedGig.pay === 'object' ? selectedGig.pay?.amount : selectedGig.pay}
+                    {typeof selectedGig.pay === "object"
+                      ? selectedGig.pay?.amount
+                      : selectedGig.pay}
                   </p>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Location</p>
-                  <p className="text-lg font-bold text-slate-900">{selectedGig.location}</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                    Location
+                  </p>
+                  <p className="text-lg font-bold text-slate-900">
+                    {selectedGig.location}
+                  </p>
                 </div>
               </div>
 
               <div className="mb-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-3 border-b-2 border-slate-100 pb-2">Job Description</h3>
+                <h3 className="text-lg font-bold text-slate-900 mb-3 border-b-2 border-slate-100 pb-2">
+                  Job Description
+                </h3>
                 <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
                   {selectedGig.description}
                 </p>
@@ -496,10 +549,15 @@ const handleApply = async (gigId) => {
 
               {selectedGig.requirements?.length > 0 && (
                 <div className="mb-8">
-                  <h3 className="text-lg font-bold text-slate-900 mb-3 border-b-2 border-slate-100 pb-2">Requirements</h3>
+                  <h3 className="text-lg font-bold text-slate-900 mb-3 border-b-2 border-slate-100 pb-2">
+                    Requirements
+                  </h3>
                   <ul className="grid grid-cols-1 gap-3 text-slate-600">
                     {selectedGig.requirements.map((req, i) => (
-                      <li key={i} className="flex items-start gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-sm font-medium">
+                      <li
+                        key={i}
+                        className="flex items-start gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-sm font-medium"
+                      >
                         <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-slate-900 shrink-0" />
                         {req}
                       </li>
@@ -509,7 +567,9 @@ const handleApply = async (gigId) => {
               )}
 
               <div className="mb-4">
-                <h3 className="text-lg font-bold text-slate-900 mb-3 border-b-2 border-slate-100 pb-2">Application Message</h3>
+                <h3 className="text-lg font-bold text-slate-900 mb-3 border-b-2 border-slate-100 pb-2">
+                  Application Message
+                </h3>
                 <textarea
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all outline-none"
                   rows={4}
@@ -522,8 +582,8 @@ const handleApply = async (gigId) => {
 
             {/* Footer (Fixed at Bottom) */}
             <div className="p-8 bg-white border-t border-slate-100 flex gap-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setSelectedGig(null);
                   setApplicationMessage("");

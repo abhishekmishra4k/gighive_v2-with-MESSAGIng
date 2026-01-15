@@ -4,6 +4,8 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Upload, GraduationCap, CheckCircle } from 'lucide-react';
 
+import { toast } from 'react-toastify';
+
 export function CollegeGigs({ user }) {
   const isVerified = user?.verified || false;
   const fileInputRef = useRef(null);
@@ -16,7 +18,7 @@ export function CollegeGigs({ user }) {
 
     const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
     if (!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
-      alert('Invalid file. Please upload JPG, PNG, or PDF under 5MB.');
+      toast.error('Invalid file. Please upload JPG, PNG, or PDF under 5MB.');
       return;
     }
 
@@ -34,11 +36,11 @@ export function CollegeGigs({ user }) {
       setTimeout(() => {
         setUploading(false);
         setUploadSuccess(true);
-        alert('Document uploaded successfully! Awaiting verification.');
+        toast.success('Document uploaded successfully! Awaiting verification.');
       }, 1500);
     } catch (err) {
       console.error('Upload failed:', err);
-      alert('Upload failed. Please try again.');
+      toast.error('Upload failed. Please try again.');
       setUploading(false);
     }
   };

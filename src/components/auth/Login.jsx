@@ -261,6 +261,7 @@ import { Tabs } from '../ui/tabs';
 import { Header } from '../layout/Header';
 import { Footer } from '../layout/Footer';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 export function Login({ onLogin }) {
   const navigate = useNavigate();
@@ -306,7 +307,7 @@ export function Login({ onLogin }) {
 
       if (response.data.success) {
         setLoginStep("otp");
-        alert(response.data.msg || "OTP sent successfully!");
+        toast.success(response.data.msg || "OTP sent successfully!");
       } else {
         setError(response.data.msg || "Something went wrong.");
       }
@@ -361,7 +362,7 @@ export function Login({ onLogin }) {
 
       const isValidJWT = token && typeof token === "string" && token.split(".").length === 3;
       if (!isValidJWT) {
-        alert("OTP verified but token is malformed or missing. Please try again.");
+        toast.error("OTP verified but token is malformed or missing. Please try again.");
         setLoading(false);
         return;
       }

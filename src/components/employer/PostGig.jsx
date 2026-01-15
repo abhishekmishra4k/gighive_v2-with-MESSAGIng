@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { toast } from 'react-toastify';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -52,13 +53,13 @@ export function PostGig() {
 
     const allowedTypes = ['video/mp4', 'video/quicktime', 'video/x-msvideo'];
     if (!allowedTypes.includes(file.type) || file.size > 50 * 1024 * 1024) {
-      alert('Invalid file. Please upload MP4, MOV, or AVI under 50MB.');
+      toast.error('Invalid file. Please upload MP4, MOV, or AVI under 50MB.');
       return;
     }
 
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('You must be logged in to upload a video.');
+      toast.error('You must be logged in to upload a video.');
       return;
     }
 
@@ -79,7 +80,7 @@ export function PostGig() {
       setFormData(prev => ({ ...prev, videoUrl: data.url }));
     } catch (err) {
       console.error('Upload failed:', err);
-      alert('Upload failed. Try again.');
+      toast.error('Upload failed. Try again.');
     } finally {
       setVideoUploading(false);
     }
@@ -102,7 +103,7 @@ try {
     const token = localStorage.getItem('token');
     const isValidJWT = token && typeof token === 'string' && token.split('.').length === 3;
     if (!isValidJWT) {
-      alert('Invalid or missing token. Please log in again.');
+      toast.error('Invalid or missing token. Please log in again.');
       return;
     }
 
@@ -132,7 +133,7 @@ try {
       const data = await res.json();
 
       if (res.ok) {
-        alert('Gig posted successfully!');
+        toast.success('Gig posted successfully!');
         setFormData({
           title: '',
           description: '',
@@ -154,11 +155,11 @@ try {
         fetchGigs();
       } else {
         console.error('Gig post failed:', data);
-        alert(`Error: ${data.msg || 'Failed to post gig'}`);
+        toast.error(`Error: ${data.msg || 'Failed to post gig'}`);
       }
     } catch (err) {
       console.error('Error posting gig:', err);
-      alert('Error posting gig.');
+      toast.error('Error posting gig.');
     }
   };
 

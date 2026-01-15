@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { io } from 'socket.io-client';
 import { useState, useEffect } from 'react';
 import { ProtectedRoute } from './components/employer/ProtectedRoute'; 
@@ -147,6 +149,7 @@ export default function App() {
         {/* Catch-all route for unmatched paths */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
     </Router>
   );
 }

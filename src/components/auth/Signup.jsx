@@ -13,7 +13,6 @@
 // const Header = () => <header className="p-4 bg-white shadow-sm"><div className="text-xl font-bold">GigHive</div></header>;
 // const Footer = () => <footer className="p-4 bg-gray-100 text-center text-sm text-gray-600">© 2025 GigHive</footer>;
 
-
 // export function Signup() {
 //     // --- STATE MANAGEMENT ---
 //     const [userType, setUserType] = useState('student');
@@ -71,7 +70,7 @@
 //             console.log("📤 Sending signup payload:", payload);
 //             await axios.post(API_URI, payload);
 //             console.log("📥 User registration successful!");
-            
+
 //             setSuccess("Registration successful! You can now log in.");
 //             // In a real app, you might auto-login or navigate to a verification page.
 //             // For now, we'll just show a success message.
@@ -117,12 +116,12 @@
 //                                         <Input name="lastName" value={formData.lastName} onChange={handleInputChange} required />
 //                                     </div>
 //                                 </div>
-                                
+
 //                                 <div>
 //                                     <label className="block text-sm font-medium text-gray-700">Email</label>
 //                                     <Input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
 //                                 </div>
-                                
+
 //                                 <div>
 //                                     <label className="block text-sm font-medium text-gray-700">Password</label>
 //                                     <Input type="password" name="password" value={formData.password} onChange={handleInputChange} required />
@@ -156,65 +155,95 @@
 // // Default export
 // export default Signup;
 
-
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 // --- MOCK UI COMPONENTS ---
-const Card = ({ children }) => <div className="bg-white shadow-md rounded-lg p-6">{children}</div>;
+const Card = ({ children }) => (
+  <div className="bg-white shadow-md rounded-lg p-6">{children}</div>
+);
 const CardHeader = ({ children }) => <div className="mb-4">{children}</div>;
-const CardTitle = ({ children }) => <h2 className="text-2xl font-bold text-center">{children}</h2>;
+const CardTitle = ({ children }) => (
+  <h2 className="text-2xl font-bold text-center">{children}</h2>
+);
 const CardContent = ({ children }) => <div>{children}</div>;
-const Input = (props) => <input {...props} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />;
-const Button = ({ children, ...props }) => <button {...props} className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 disabled:bg-green-300 transition-colors">{children}</button>;
-const Checkbox = (props) => <input type="checkbox" {...props} className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />;
-const Header = () => <header className="p-4 bg-white shadow-sm"><div className="text-xl font-bold">GigHive</div></header>;
-const Footer = () => <footer className="p-4 bg-gray-100 text-center text-sm text-gray-600">© 2025 GigHive</footer>;
+const Input = (props) => (
+  <input
+    {...props}
+    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+);
+const Button = ({ children, ...props }) => (
+  <button
+    {...props}
+    className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 disabled:bg-green-300 transition-colors"
+  >
+    {children}
+  </button>
+);
+const Checkbox = (props) => (
+  <input
+    type="checkbox"
+    {...props}
+    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+  />
+);
+const Header = () => (
+  <header className="p-4 bg-white shadow-sm">
+    <div className="text-xl font-bold">GigHive</div>
+  </header>
+);
+const Footer = () => (
+  <footer className="p-4 bg-gray-100 text-center text-sm text-gray-600">
+    © 2025 GigHive
+  </footer>
+);
 
 export function Signup() {
-  const [userType, setUserType] = useState('student'); // 'student' or 'employer'
+  const [userType, setUserType] = useState("student"); // 'student' or 'employer'
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
     agreeToTerms: false,
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
+      setError("Passwords do not match.");
       return;
     }
 
     if (!formData.agreeToTerms) {
-      setError('You must agree to the terms of service.');
+      setError("You must agree to the terms of service.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const API_URI = 'http://localhost:5001/api/user/register';
+      const API_URI = "http://localhost:5001/api/user/register";
 
       const payload = {
         name: `${formData.firstName} ${formData.lastName}`,
@@ -223,22 +252,24 @@ export function Signup() {
         role: userType, // ✅ This is critical for backend JWT role embedding
       };
 
-      console.log('📤 Sending signup payload:', payload);
+      console.log("📤 Sending signup payload:", payload);
       await axios.post(API_URI, payload);
-      console.log('✅ User registration successful');
+      console.log("✅ User registration successful");
 
-      setSuccess('Registration successful! You can now log in.');
+      setSuccess("Registration successful! You can now log in.");
       setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
         agreeToTerms: false,
       });
     } catch (err) {
-      console.error('❌ Signup error:', err.response);
-      const errorMsg = err.response?.data?.msg || 'An error occurred during sign up. Please try again.';
+      console.error("❌ Signup error:", err.response);
+      const errorMsg =
+        err.response?.data?.msg ||
+        "An error occurred during sign up. Please try again.";
       setError(errorMsg);
     } finally {
       setLoading(false);
@@ -256,22 +287,34 @@ export function Signup() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                {error && <p className="bg-red-100 text-red-700 p-3 rounded-md text-center">{error}</p>}
-                {success && <p className="bg-green-100 text-green-700 p-3 rounded-md text-center">{success}</p>}
+                {error && (
+                  <p className="bg-red-100 text-red-700 p-3 rounded-md text-center">
+                    {error}
+                  </p>
+                )}
+                {success && (
+                  <p className="bg-green-100 text-green-700 p-3 rounded-md text-center">
+                    {success}
+                  </p>
+                )}
 
                 {/* User Type Tabs */}
                 <div className="grid grid-cols-2 gap-2 rounded-md bg-gray-100 p-1">
                   <button
                     type="button"
-                    onClick={() => setUserType('student')}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md ${userType === 'student' ? 'bg-white shadow' : ''}`}
+                    onClick={() => setUserType("student")}
+                    className={`px-3 py-1.5 text-sm font-medium rounded-md ${
+                      userType === "student" ? "bg-white shadow" : ""
+                    }`}
                   >
                     Student
                   </button>
                   <button
                     type="button"
-                    onClick={() => setUserType('employer')}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md ${userType === 'employer' ? 'bg-white shadow' : ''}`}
+                    onClick={() => setUserType("employer")}
+                    className={`px-3 py-1.5 text-sm font-medium rounded-md ${
+                      userType === "employer" ? "bg-white shadow" : ""
+                    }`}
                   >
                     Employer
                   </button>
@@ -279,40 +322,95 @@ export function Signup() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">First Name</label>
-                    <Input name="firstName" value={formData.firstName} onChange={handleInputChange} required />
+                    <label className="block text-sm font-medium text-gray-700">
+                      First Name
+                    </label>
+                    <Input
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                    <Input name="lastName" value={formData.lastName} onChange={handleInputChange} required />
+                    <label className="block text-sm font-medium text-gray-700">
+                      Last Name
+                    </label>
+                    <Input
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Email</label>
-                  <Input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
+                  <label className="block text-sm font-medium text-gray-700">
+                    Email
+                  </label>
+                  <Input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Password</label>
-                  <Input type="password" name="password" value={formData.password} onChange={handleInputChange} required />
+                  <label className="block text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  <Input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                  <Input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} required />
+                  <label className="block text-sm font-medium text-gray-700">
+                    Confirm Password
+                  </label>
+                  <Input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </div>
 
                 <div className="flex items-start">
-                  <Checkbox id="terms" name="agreeToTerms" checked={formData.agreeToTerms} onChange={handleInputChange} />
+                  <Checkbox
+                    id="terms"
+                    name="agreeToTerms"
+                    checked={formData.agreeToTerms}
+                    onChange={handleInputChange}
+                  />
                   <div className="ml-3 text-sm">
-                    <label htmlFor="terms" className="text-gray-500">I agree to the Terms of Service</label>
+                    <label htmlFor="terms" className="text-gray-500">
+                      I agree to the Terms of Service
+                    </label>
                   </div>
                 </div>
 
                 <Button type="submit" disabled={loading}>
-                  {loading ? 'Creating Account...' : 'Create Account'}
+                  {loading ? "Creating Account..." : "Create Account"}
                 </Button>
+
+                <div className="text-center text-sm text-gray-600">
+                  Already have an account?{" "}
+                  <Link
+                    to="/login"
+                    className="text-blue-600 hover:underline font-medium"
+                  >
+                    Log in
+                  </Link>
+                </div>
               </form>
             </CardContent>
           </Card>
