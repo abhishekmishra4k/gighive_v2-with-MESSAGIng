@@ -25,17 +25,17 @@ export function StudentDashboard() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+    <div className="h-screen overflow-hidden bg-background flex flex-col md:flex-row">
       {/* Mobile-only Nav */}
       <MobileNav role="student" />
 
       {/* Desktop-only Sidebar */}
-      <div className="hidden md:flex h-screen sticky top-0">
+      <div className="hidden md:flex h-full border-r">
         <StudentSidebar />
       </div>
 
-      <main className="flex-1 overflow-y-auto overflow-x-hidden pt-16 md:pt-0 pb-20 md:pb-0">
-        <AnimatePresence mode="wait" initial={false}>
+      <main className="flex-1 h-full overflow-y-auto pt-16 md:pt-0 pb-20 md:pb-0">
+        <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/"              element={<Navigate to="find-gigs" replace />} />
             <Route path="dashboard"      element={<Dashboard user={user} />} />

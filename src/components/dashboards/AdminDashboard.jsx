@@ -15,10 +15,10 @@ export function AdminDashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen overflow-hidden bg-background flex">
       <AdminSidebar />
 
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 h-full overflow-y-auto">
         <Routes>
           <Route path="/"           element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard"   element={<Dashboard user={user} />} />

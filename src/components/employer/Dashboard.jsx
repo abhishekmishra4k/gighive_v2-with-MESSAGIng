@@ -396,13 +396,7 @@ const Dashboard = ({ user }) => {
   };
 
   useEffect(() => {
-    const API_URL =
-      (typeof process !== "undefined" &&
-        process.env &&
-        process.env.REACT_APP_API_URL) ||
-      (typeof window !== "undefined" && window.REACT_APP_API_URL) ||
-      "http://localhost:5001";
-
+    const API_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
     const myId = user?.id || user?._id;
     if (!myId) return;
 
