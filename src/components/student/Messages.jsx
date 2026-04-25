@@ -333,7 +333,7 @@ export default function StudentMessages() {
 
   // ─── Select conversation ──────────────────
   const handleSelectChat = useCallback(async (conv) => {
-    if (selectedChat?._id && socket.current) {
+    if (selectedChat?._id && socket) {
       socket.emit('conversation_closed', { conversationId: selectedChat._id, userId });
     }
     setSelectedChat(conv);
@@ -342,7 +342,7 @@ export default function StudentMessages() {
     setTypingUsers({});
     setReplyTo(null);
 
-    if (socket.current) {
+    if (socket) {
       socket.emit('conversation_opened', { conversationId: conv._id, userId });
     }
 
@@ -401,8 +401,8 @@ export default function StudentMessages() {
 
   // ─── Socket events ────────────────────────
   useEffect(() => {
-    if (!socket.current) return;
-    const s = socket.current;
+    if (!socket) return;
+    const s = socket;
 
     const onReceiveMessage = (msg) => {
       if (msg.conversationId?.toString() === selectedChat?._id?.toString()) {
@@ -509,11 +509,13 @@ export default function StudentMessages() {
   // ─── Typing emit ──────────────────────────
   const handleInputChange = (e) => {
     setInputText(e.target.value);
-    if (!selectedChat || !socket.current) return;
+    if (!selectedChat || !socket) return;
     socket.emit('user_typing', { conversationId: selectedChat._id, userId, senderName: user?.name });
     clearTimeout(typingRef.current);
     typingRef.current = setTimeout(() => {
-      socket.current?.emit('user_stopped_typing', { conversationId: selectedChat._id, userId });
+      if (socket) {
+        socket.emit('user_stopped_typing', { conversationId: selectedChat._id, userId });
+      }
     }, 1500);
   };
 
@@ -542,9 +544,9 @@ export default function StudentMessages() {
     // Force scroll down when sending a message
     setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
 
-    socket.current?.emit('user_stopped_typing', { conversationId: selectedChat._id, userId });
+    socket?.emit('user_stopped_typing', { conversationId: selectedChat._id, userId });
 
-    socket.current?.emit('send_message', {
+    socket?.emit('send_message', {
       senderId: userId,
       receiverId: selectedChat.otherUser?._id,
       content: text,

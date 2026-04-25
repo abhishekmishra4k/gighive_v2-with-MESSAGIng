@@ -300,7 +300,7 @@ export function Messages() {
   }, [userId]);
 
   const handleSelectChat = useCallback(async (conv) => {
-    if (selectedChat?._id && socket.current) {
+    if (selectedChat?._id && socket) {
       socket.emit('conversation_closed', { conversationId: selectedChat._id, userId });
     }
     setSelectedChat(conv);
@@ -308,7 +308,9 @@ export function Messages() {
     setMessages([]);
     setTypingUsers({});
     setReplyTo(null);
-    socket.current?.emit('conversation_opened', { conversationId: conv._id, userId });
+    if (socket) {
+      socket.emit('conversation_opened', { conversationId: conv._id, userId });
+    }
 
     setMsgLoading(true);
     try {
@@ -317,11 +319,13 @@ export function Messages() {
       setMessages(msgs);
       const unread = msgs.filter(m => m.senderId?.toString() !== userId && m.status !== 'read');
       for (const m of unread) {
-        socket.current?.emit('message_read', { messageId: m._id, conversationId: conv._id, readerId: userId });
+        if (socket) {
+          socket.emit('message_read', { messageId: m._id, conversationId: conv._id, readerId: userId });
+        }
       }
     } catch (err) { console.error(err); }
     finally { setMsgLoading(false); }
-  }, [selectedChat, userId]);
+  }, [selectedChat, socket, userId]);
 
   // ─── Auto-open from location.state ────
   useEffect(() => {
@@ -356,8 +360,8 @@ export function Messages() {
 
   // ─── Socket events ────────────────────────
   useEffect(() => {
-    if (!socket.current) return;
-    const s = socket.current;
+    if (!socket) return;
+    const s = socket;
 
     const onReceiveMessage = (msg) => {
       if (msg.conversationId?.toString() === selectedChat?._id?.toString()) {
@@ -435,11 +439,13 @@ export function Messages() {
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
-    if (!selectedChat || !socket.current) return;
+    if (!selectedChat || !socket) return;
     socket.emit('user_typing', { conversationId: selectedChat._id, userId, senderName: user?.name });
     clearTimeout(typingRef.current);
     typingRef.current = setTimeout(() => {
-      socket.current?.emit('user_stopped_typing', { conversationId: selectedChat._id, userId });
+      if (socket) {
+        socket.emit('user_stopped_typing', { conversationId: selectedChat._id, userId });
+      }
     }, 1500);
   };
 
