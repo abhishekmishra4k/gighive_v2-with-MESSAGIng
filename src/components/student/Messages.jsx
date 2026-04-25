@@ -492,7 +492,7 @@ export default function StudentMessages() {
       s.off('user_status_changed',  onStatusChanged);
       s.off('reaction_updated',     onReactionUpdated);
     };
-  }, [selectedChat, userId]);
+  }, [socket, selectedChat, userId]);
 
   // ─── Auto-scroll ──────────────────────────
   useEffect(() => {
