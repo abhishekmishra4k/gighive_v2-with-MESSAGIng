@@ -522,9 +522,9 @@ export function Messages() {
     
     // Force scroll down when sending a message
     setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
-    socket.current?.emit('user_stopped_typing', { conversationId: selectedChat._id, userId });
+    socket?.emit('user_stopped_typing', { conversationId: selectedChat._id, userId });
     
-    socket.current?.emit('send_message', {
+    socket?.emit('send_message', {
       senderId: userId,
       receiverId: selectedChat.otherUser?._id,
       content: text,

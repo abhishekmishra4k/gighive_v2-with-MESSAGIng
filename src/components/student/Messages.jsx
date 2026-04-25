@@ -362,7 +362,7 @@ export default function StudentMessages() {
       // Mark as read
       const unread = msgs.filter(m => m.senderId?.toString() !== userId && m.status !== 'read');
       for (const m of unread) {
-        socket.current?.emit('message_read', { messageId: m._id, conversationId: conv._id, readerId: userId });
+        socket?.emit('message_read', { messageId: m._id, conversationId: conv._id, readerId: userId });
       }
     } catch (err) {
       console.error('Load messages error', err);
