@@ -306,6 +306,7 @@ export default function StudentMessages() {
   const [messages,       setMessages]       = useState([]);
   const [replyTo,        setReplyTo]        = useState(null);
   const [editingMsg,     setEditingMsg]     = useState(null);
+  const [inputText,      setInputText]      = useState('');
   const [searchQuery,    setSearchQuery]    = useState('');
   const [typingUsers,    setTypingUsers]    = useState({});
   const [convLoading,    setConvLoading]    = useState(true);
@@ -494,6 +495,7 @@ export default function StudentMessages() {
 
     s.on('receive_message',      onReceiveMessage);
     s.on('message_sent',         onMessageSent);
+    s.on('message_error',        onMessageError);
     s.on('user_typing',          onUserTyping);
     s.on('message_read_receipt', onReadReceipt);
     s.on('unread_count_updated', onUnreadUpdated);
