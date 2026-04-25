@@ -26,11 +26,11 @@ function EmployerDashboard() {
       <MobileNav role="employer" />
 
       {/* Desktop-only Sidebar */}
-      <div className="hidden md:flex h-full border-r">
+      <aside className="hidden md:flex h-full border-r shrink-0">
         <EmployerSidebar />
-      </div>
+      </aside>
 
-      <main className="flex-1 h-full overflow-y-auto pt-16 md:pt-0 pb-20 md:pb-0">
+      <main className="flex-1 min-w-0 h-full overflow-y-auto pt-16 md:pt-0 pb-20 md:pb-0">
         <Routes>
           <Route index                 element={<Navigate to="/employer-dashboard/dashboard" replace />} />
           <Route path="dashboard"      element={<Dashboard user={user} />} />

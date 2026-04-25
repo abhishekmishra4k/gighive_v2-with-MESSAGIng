@@ -30,11 +30,11 @@ export function StudentDashboard() {
       <MobileNav role="student" />
 
       {/* Desktop-only Sidebar */}
-      <div className="hidden md:flex h-full border-r">
+      <aside className="hidden md:flex h-full border-r shrink-0">
         <StudentSidebar />
-      </div>
+      </aside>
 
-        <div className="flex-1 h-full overflow-y-auto pt-16 md:pt-0 pb-20 md:pb-0">
+      <main className="flex-1 min-w-0 h-full overflow-y-auto pt-16 md:pt-0 pb-20 md:pb-0">
           <Routes>
             <Route index                 element={<Navigate to="/student-dashboard/dashboard" replace />} />
             <Route path="dashboard"      element={<Dashboard user={user} />} />
@@ -49,7 +49,7 @@ export function StudentDashboard() {
             <Route path="settings"       element={<Settings user={user} />} />
             <Route path="people"         element={<PeopleDirectory />} />
           </Routes>
-        </div>
+      </main>
     </div>
   );
 }

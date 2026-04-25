@@ -52,7 +52,7 @@ export function MobileNav({ role }) {
   };
 
   return (
-    <div className="md:hidden contents">
+    <div className="md:hidden">
       {/* Top Header */}
       <header className="fixed top-0 left-0 right-0 h-16 bg-background border-b z-40 flex items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
