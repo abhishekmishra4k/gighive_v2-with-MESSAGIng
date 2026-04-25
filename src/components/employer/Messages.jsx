@@ -184,12 +184,18 @@ function MessageBubble({ msg, isOwn, userId, onReact, onReply, onDelete, onCopy 
                 onClick={() => { onReply(msg); setShowMenu(false); }}>
                 <Reply size={14} /> Reply
               </button>
-              {isOwn && (
-                <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
-                  onClick={() => { onDelete(msg._id); setShowMenu(false); }}>
-                  <Trash2 size={14} /> Delete
-                </button>
-              )}
+               {isOwn && !msg.isDeleted && (
+                 <>
+                   <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors"
+                     onClick={() => { onEdit(msg); setShowMenu(false); }}>
+                     <PenSquare size={14} /> Edit
+                   </button>
+                   <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                     onClick={() => { onDelete(msg._id); setShowMenu(false); }}>
+                     <Trash2 size={14} /> Delete
+                   </button>
+                 </>
+               )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -269,7 +275,9 @@ export function Messages() {
   const [conversations,  setConversations]  = useState([]);
   const [selectedChat,   setSelectedChat]   = useState(null);
   const [messages,       setMessages]       = useState([]);
-  const [inputText,      setInputText]      = useState('');
+  const [replyTo, setReplyTo] = useState(null);
+  const [editingMsg, setEditingMsg] = useState(null);
+  const [inputText, setInputText] = useState('');
   const [searchQuery,    setSearchQuery]    = useState('');
   const [typingUsers,    setTypingUsers]    = useState({});
   const [convLoading,    setConvLoading]    = useState(true);
@@ -402,6 +410,14 @@ export function Messages() {
     };
     const onReactionUpdated = ({ messageId, reactions }) => setMessages(prev => prev.map(m => m._id?.toString() === messageId?.toString() ? { ...m, reactions } : m));
 
+    const onMessageEdited = ({ messageId, content, isEdited, editedAt }) => {
+      setMessages(prev => prev.map(m => m._id?.toString() === messageId?.toString() ? { ...m, content, isEdited, editedAt } : m));
+    };
+
+    const onMessageDeleted = ({ messageId }) => {
+      setMessages(prev => prev.map(m => m._id?.toString() === messageId?.toString() ? { ...m, isDeleted: true } : m));
+    };
+
     s.on('receive_message',      onReceiveMessage);
     s.on('message_sent',         onMessageSent);
     s.on('message_error',        onMessageError);
@@ -410,6 +426,8 @@ export function Messages() {
     s.on('unread_count_updated', onUnreadUpdated);
     s.on('user_status_changed',  onStatusChanged);
     s.on('reaction_updated',     onReactionUpdated);
+    s.on('message_edited',       onMessageEdited);
+    s.on('message_deleted',      onMessageDeleted);
 
     return () => {
       s.off('receive_message',      onReceiveMessage);
@@ -420,6 +438,8 @@ export function Messages() {
       s.off('unread_count_updated', onUnreadUpdated);
       s.off('user_status_changed',  onStatusChanged);
       s.off('reaction_updated',     onReactionUpdated);
+      s.off('message_edited',       onMessageEdited);
+      s.off('message_deleted',      onMessageDeleted);
     };
   }, [socket, selectedChat, userId]);
 
@@ -446,6 +466,27 @@ export function Messages() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  const handleEdit = (msg) => {
+    setEditingMsg(msg);
+    setInputText(msg.content);
+    setReplyTo(null);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingMsg || !inputText.trim()) return;
+    try {
+      await apiClient.put(`/message/${editingMsg._id}/edit`, {
+        userId,
+        content: inputText.trim()
+      });
+      setMessages(prev => prev.map(m =>
+        m._id === editingMsg._id ? { ...m, content: inputText.trim(), isEdited: true, editedAt: new Date().toISOString() } : m
+      ));
+      setEditingMsg(null);
+      setInputText('');
+    } catch { toast.error('Could not edit message'); }
+  };
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
@@ -618,7 +659,11 @@ export function Messages() {
                           <MessageBubble key={msg._id || i} msg={msg}
                             isOwn={msg.senderId?.toString() === userId || msg.senderId?._id?.toString() === userId}
                             userId={userId}
-                            onReact={handleReact} onReply={setReplyTo} onDelete={handleDelete} onCopy={handleCopy}
+                            onReact={handleReact}
+                            onReply={setReplyTo}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                            onCopy={handleCopy}
                           />
                         ))
                       )}
@@ -636,6 +681,27 @@ export function Messages() {
                     </div>
                   )}
                 </div>
+
+                {/* Editing bar */}
+                <AnimatePresence>
+                  {editingMsg && (
+                    <motion.div
+                      className="mx-4 px-3 py-2 bg-primary/10 rounded-t-lg border-l-4 border-primary flex items-start justify-between gap-2"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-primary">Editing message</p>
+                        <p className="text-xs text-muted-foreground truncate italic">"{editingMsg.content}"</p>
+                      </div>
+                      <button onClick={() => { setEditingMsg(null); setInputText(''); }} className="flex-shrink-0 text-muted-foreground hover:text-foreground">
+                        <X size={14} />
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Reply bar */}
                 <AnimatePresence>
@@ -676,12 +742,24 @@ export function Messages() {
                     </Button>
                   </motion.div>
 
-                  <Input id="employer-message-input" value={inputText} onChange={handleInputChange}
-                    placeholder="Type a message…" onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                    className="flex-1" disabled={msgLoading} />
+                  <Input
+                    id="employer-message-input"
+                    value={inputText}
+                    onChange={handleInputChange}
+                    placeholder={editingMsg ? "Edit your message…" : "Type a message…"}
+                    onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (editingMsg ? handleSaveEdit() : handleSend())}
+                    className="flex-1"
+                    disabled={msgLoading}
+                  />
 
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button id="employer-send-btn" onClick={handleSend} disabled={!inputText.trim()}><Send size={16} /></Button>
+                    <Button
+                      id="employer-send-btn"
+                      onClick={editingMsg ? handleSaveEdit : handleSend}
+                      disabled={!inputText.trim()}
+                    >
+                      {editingMsg ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
+                    </Button>
                   </motion.div>
                 </div>
               </>

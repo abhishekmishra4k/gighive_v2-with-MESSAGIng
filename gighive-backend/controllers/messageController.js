@@ -339,6 +339,14 @@ exports.deleteMessage = async (req, res) => {
         message.isDeleted = true;
         await message.save();
 
+        // Broadcast delete
+        const io = req.app?.get('io');
+        if (io && message.conversationId) {
+            io.to(message.conversationId.toString()).emit('message_deleted', {
+                messageId: messageId.toString(),
+            });
+        }
+
         res.json({
             success: true,
             message: 'Message deleted',
@@ -381,6 +389,17 @@ exports.editMessage = async (req, res) => {
         message.isEdited = true;
         message.editedAt = new Date();
         await message.save();
+
+        // Broadcast edit
+        const io = req.app?.get('io');
+        if (io && message.conversationId) {
+            io.to(message.conversationId.toString()).emit('message_edited', {
+                messageId: messageId.toString(),
+                content: message.content,
+                isEdited: true,
+                editedAt: message.editedAt
+            });
+        }
 
         res.json({
             success: true,
