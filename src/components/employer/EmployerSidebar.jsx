@@ -32,6 +32,7 @@ export function EmployerSidebar() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const socket = useSocket();
+  const userId = user?._id || user?.id;
 
   // ─── Fetch total unread count from conversations ───
   useEffect(() => {
