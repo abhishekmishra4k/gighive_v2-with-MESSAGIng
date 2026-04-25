@@ -7,10 +7,13 @@ import { Progress } from "../ui/progress";
 import { useAuth } from "../../context/AuthContext";
 import apiClient from "../../lib/apiClient";
 import { io } from "socket.io-client";
+import { useTheme } from "../../context/ThemeContext";
 import {
   Home,
   Search,
   Video,
+  Sun,
+  Moon,
   GraduationCap,
   Heart,
   Users,
@@ -31,6 +34,7 @@ export function StudentSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -241,9 +245,14 @@ export function StudentSidebar() {
                   </p>
                 </div>
               </div>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <Bell size={16} />
-              </Button>
+              <div className="flex flex-col gap-1">
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={toggleTheme} title="Toggle Theme">
+                  {theme === 'dark' ? <Sun size={16} className="text-yellow-400" /> : <Moon size={16} />}
+                </Button>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Bell size={16} />
+                </Button>
+              </div>
             </div>
           </div>
         )}

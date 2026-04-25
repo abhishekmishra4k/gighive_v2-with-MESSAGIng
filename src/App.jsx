@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
 import { useLayoutEffect } from 'react';
 
@@ -119,18 +120,15 @@ function AppRoutes() {
 }
 
 export default function App() {
-  useLayoutEffect(() => {
-    // Force dark mode active for the new yellowish theme
-    document.documentElement.classList.add('dark');
-  }, []);
-
   return (
-    <AuthProvider>
-      <Router>
-        <AppRoutes />
-        <ToastContainer position="top-right" autoClose={3000} />
-      </Router>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <AppRoutes />
+          <ToastContainer position="top-right" autoClose={3000} />
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
