@@ -13,6 +13,7 @@ import { Credits }        from '../student/Credits';
 import { Profile }        from '../student/Profile';
 import { Settings }       from '../student/Settings';
 import { PeopleDirectory } from '../shared/PeopleDirectory';
+import { MobileNav }       from '../shared/MobileNav';
 
 /**
  * 🎓 Student Dashboard
@@ -24,10 +25,16 @@ export function StudentDashboard() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <StudentSidebar />
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      {/* Mobile-only Nav */}
+      <MobileNav role="student" />
 
-      <main className="flex-1 overflow-auto">
+      {/* Desktop-only Sidebar */}
+      <div className="hidden md:flex h-screen sticky top-0">
+        <StudentSidebar />
+      </div>
+
+      <main className="flex-1 overflow-x-hidden pt-16 md:pt-0 pb-20 md:pb-0">
         <AnimatePresence mode="wait" initial={false}>
           <Routes location={location} key={location.pathname}>
             <Route path="/"              element={<Navigate to="/student-dashboard/find-gigs" />} />

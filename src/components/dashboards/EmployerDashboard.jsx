@@ -8,6 +8,7 @@ import Messages        from '../employer/Messages';
 import Dashboard       from '../employer/Dashboard';
 import Plans           from '../employer/Plans';
 import { PeopleDirectory } from '../shared/PeopleDirectory';
+import { MobileNav }       from '../shared/MobileNav';
 
 /**
  * 💼 Employer Dashboard
@@ -20,10 +21,16 @@ function EmployerDashboard() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <EmployerSidebar />
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      {/* Mobile-only Nav */}
+      <MobileNav role="employer" />
 
-      <main className="flex-1 overflow-auto">
+      {/* Desktop-only Sidebar */}
+      <div className="hidden md:flex h-screen sticky top-0">
+        <EmployerSidebar />
+      </div>
+
+      <main className="flex-1 overflow-x-hidden pt-16 md:pt-0 pb-20 md:pb-0">
         <AnimatePresence mode="wait" initial={false}>
           <Routes location={location} key={location.pathname}>
             <Route path="/"              element={<Navigate to="/employer-dashboard/dashboard" />} />

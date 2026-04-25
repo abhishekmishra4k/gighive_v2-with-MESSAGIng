@@ -295,6 +295,7 @@ export function Messages() {
   const [msgLoading,     setMsgLoading]     = useState(false);
   const [showEmoji,      setShowEmoji]      = useState(false);
   const [showCompose,    setShowCompose]    = useState(false);
+  const [showChatOnMobile, setShowChatOnMobile] = useState(false);
   const [replyTo,        setReplyTo]        = useState(null);
 
   const chatEndRef  = useRef(null);
@@ -322,6 +323,7 @@ export function Messages() {
       socket.current.emit('conversation_closed', { conversationId: selectedChat._id, userId });
     }
     setSelectedChat(conv);
+    setShowChatOnMobile(true);
     setMessages([]);
     setTypingUsers({});
     setReplyTo(null);
@@ -507,31 +509,29 @@ export function Messages() {
     <>
       <UserSearchModal isOpen={showCompose} onClose={() => setShowCompose(false)} userRole="employer" />
 
-      <div className="p-6 h-[calc(100vh-4rem)] flex flex-col">
-        <div className="mb-4 flex-shrink-0">
-          <h1 className="text-3xl font-bold">Messages</h1>
-          <p className="text-muted-foreground">Real-time chat with students</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
-          {/* Conversation List */}
-          <Card className="lg:col-span-1 flex flex-col min-h-0 overflow-hidden">
-            <CardContent className="p-0 flex flex-col h-full">
-              <div className="p-4 border-b flex-shrink-0 space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-                    <Input placeholder="Search conversations…" className="pl-10" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-                  </div>
-                  <motion.button onClick={() => setShowCompose(true)}
-                    className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex-shrink-0"
-                    title="New Message" whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}>
-                    <PenSquare size={16} />
-                  </motion.button>
+      <div className="p-0 md:p-6 h-full md:h-[calc(100vh-4rem)] flex flex-col">
+        <div className="flex-1 bg-card rounded-none md:rounded-2xl shadow-none md:shadow-xl border-none md:border overflow-hidden flex">
+          {/* List Sidebar */}
+          <div className={`${(selectedChat && showChatOnMobile) ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r flex flex-col bg-card`}>
+            <div className="p-4 border-b flex-shrink-0 space-y-2">
+              <h1 className="text-xl font-bold">Messages</h1>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                  <Input
+                    placeholder="Search…"
+                    className="pl-10"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                  />
                 </div>
+                <Button variant="outline" size="sm" onClick={() => setShowCompose(true)}>
+                  <PenSquare size={16} />
+                </Button>
               </div>
-
-              <div className="overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            </div>
+            
+            <div className="overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden">
                 {convLoading ? (
                   <div className="flex items-center justify-center p-8"><Loader2 className="animate-spin text-muted-foreground" size={24} /></div>
                 ) : filteredConversations.length === 0 ? (
@@ -548,16 +548,18 @@ export function Messages() {
                   </motion.div>
                 )}
               </div>
-            </CardContent>
-          </Card>
+          </div>
 
-          {/* Chat Window */}
-          <Card className="lg:col-span-2 flex flex-col min-h-0 overflow-hidden">
+          {/* Conversation Area */}
+          <div className={`${(!selectedChat || !showChatOnMobile) ? 'hidden md:flex' : 'flex'} flex-1 flex flex-col bg-background relative`}>
             {selectedChat ? (
               <>
                 {/* Header */}
-                <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
+                <div className="p-4 border-b flex items-center justify-between bg-card z-10 sticky top-0">
                   <div className="flex items-center gap-3">
+                    <Button variant="ghost" size="sm" className="md:hidden p-0 h-8 w-8 -ml-1" onClick={() => setShowChatOnMobile(false)}>
+                      <ChevronLeft size={24} />
+                    </Button>
                     <div className="relative">
                       <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-semibold">
                         {(selectedChat.otherUser?.name || '?').slice(0, 2).toUpperCase()}

@@ -136,18 +136,18 @@ export function Dashboard({ user }) {
   ];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-2xl md:text-3xl font-bold">
             Welcome back, {user?.name?.split(" ")[0] || "Student"}!
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground">
             Here's what's happening with your gigs today.
           </p>
         </div>
-        <Button onClick={handleApplyToNewGigs}>
+        <Button onClick={handleApplyToNewGigs} className="w-full md:w-auto">
           <FileText className="mr-2" size={16} />
           Apply to New Gigs
         </Button>

@@ -324,6 +324,7 @@ export default function StudentMessages() {
   const [msgLoading,     setMsgLoading]     = useState(false);
   const [showEmoji,      setShowEmoji]      = useState(false);
   const [showCompose,    setShowCompose]    = useState(false);
+  const [showChatOnMobile, setShowChatOnMobile] = useState(false);
   const [replyTo,        setReplyTo]        = useState(null);
 
   const chatEndRef   = useRef(null);
@@ -355,6 +356,7 @@ export default function StudentMessages() {
       socket.current.emit('conversation_closed', { conversationId: selectedChat._id, userId });
     }
     setSelectedChat(conv);
+    setShowChatOnMobile(true);
     setMessages([]);
     setTypingUsers({});
     setReplyTo(null);
@@ -617,79 +619,80 @@ export default function StudentMessages() {
         userRole="student"
       />
 
-      <div className="p-6 h-[calc(100vh-4rem)] flex flex-col">
-        {/* Header */}
-        <div className="mb-4 flex-shrink-0">
-          <h1 className="text-3xl font-bold">Messages</h1>
-          <p className="text-muted-foreground">Real-time chat with employers</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
-          {/* ─── Conversation List ─── */}
-          <Card className="lg:col-span-1 flex flex-col min-h-0 overflow-hidden">
-            <CardContent className="p-0 flex flex-col h-full">
-              {/* Search + Compose */}
-              <div className="p-4 border-b flex-shrink-0 space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-                    <Input
-                      placeholder="Search conversations…"
-                      className="pl-10"
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                  {/* ✏️ Compose button */}
-                  <motion.button
-                    onClick={() => setShowCompose(true)}
-                    className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex-shrink-0"
-                    title="New Message"
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.92 }}
-                  >
-                    <PenSquare size={16} />
-                  </motion.button>
+      <div className="p-0 md:p-6 h-full md:h-[calc(100vh-4rem)] flex flex-col">
+        <div className="flex-1 bg-card rounded-none md:rounded-2xl shadow-none md:shadow-xl border-none md:border overflow-hidden flex">
+          {/* 👥 Sidebar List */}
+          <div className={`${(selectedChat && showChatOnMobile) ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r flex flex-col bg-card`}>
+            <div className="p-4 border-b flex-shrink-0 space-y-2">
+              <h1 className="text-xl font-bold">Messages</h1>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                  <Input
+                    placeholder="Search conversations…"
+                    className="pl-10"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                  />
                 </div>
+                {/* ✏️ Compose button */}
+                <motion.button
+                  onClick={() => setShowCompose(true)}
+                  className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex-shrink-0"
+                  title="New Message"
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.92 }}
+                >
+                  <PenSquare size={16} />
+                </motion.button>
               </div>
+            </div>
 
-              {/* List */}
-              <div className="overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                {convLoading ? (
-                  <div className="flex items-center justify-center p-8">
-                    <Loader2 className="animate-spin text-muted-foreground" size={24} />
-                  </div>
-                ) : filteredConversations.length === 0 ? (
-                  <div className="p-6 text-center text-muted-foreground">
-                    <MessageCircle className="mx-auto mb-2 opacity-40" size={32} />
-                    <p className="text-sm">No conversations yet</p>
-                    <Button variant="link" size="sm" className="mt-1" onClick={() => setShowCompose(true)}>
-                      Start one →
-                    </Button>
-                  </div>
-                ) : (
-                  <motion.div variants={staggerContainer} initial="hidden" animate="visible">
-                    {filteredConversations.map(conv => (
-                      <ConversationItem
-                        key={conv._id}
-                        conv={conv}
-                        isSelected={selectedChat?._id === conv._id}
-                        onClick={() => handleSelectChat(conv)}
-                      />
-                    ))}
-                  </motion.div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+            {/* List */}
+            <div className="overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {convLoading ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="animate-spin text-muted-foreground" size={24} />
+                </div>
+              ) : filteredConversations.length === 0 ? (
+                <div className="p-6 text-center text-muted-foreground">
+                  <MessageCircle className="mx-auto mb-2 opacity-40" size={32} />
+                  <p className="text-sm">No conversations yet</p>
+                  <Button variant="link" size="sm" className="mt-1" onClick={() => setShowCompose(true)}>
+                    Start one →
+                  </Button>
+                </div>
+              ) : (
+                <motion.div variants={staggerContainer} initial="hidden" animate="visible">
+                  {filteredConversations.map(conv => (
+                    <ConversationItem
+                      key={conv._id}
+                      conv={conv}
+                      isSelected={selectedChat?._id === conv._id}
+                      onClick={() => handleSelectChat(conv)}
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </div>
+          </div>
 
           {/* ─── Chat Window ─── */}
-          <Card className="lg:col-span-2 flex flex-col min-h-0 overflow-hidden">
+          <div className={`${(!selectedChat || !showChatOnMobile) ? 'hidden md:flex' : 'flex'} flex-1 flex flex-col bg-background relative`}>
             {selectedChat ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
+                <div className="p-4 border-b flex items-center justify-between flex-shrink-0 bg-card z-10">
                   <div className="flex items-center gap-3">
+                    {/* Back button for mobile */}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="md:hidden p-0 h-8 w-8 -ml-1" 
+                      onClick={() => setShowChatOnMobile(false)}
+                    >
+                      <ChevronLeft size={24} />
+                    </Button>
                     <div className="relative">
                       <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-semibold">
                         {(selectedChat.otherUser?.name || '?').slice(0, 2).toUpperCase()}
