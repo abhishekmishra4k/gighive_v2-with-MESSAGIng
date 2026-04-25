@@ -485,6 +485,7 @@ export default function StudentMessages() {
     return () => {
       s.off('receive_message',      onReceiveMessage);
       s.off('message_sent',         onMessageSent);
+      s.off('message_error',        onMessageError);
       s.off('user_typing',          onUserTyping);
       s.off('message_read_receipt', onReadReceipt);
       s.off('unread_count_updated', onUnreadUpdated);

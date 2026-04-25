@@ -399,6 +399,7 @@ export function Messages() {
     const onStatusChanged = ({ userId: uid, isOnline }) => {
       setConversations(prev => prev.map(c => c.otherUser?._id?.toString() === uid?.toString() ? { ...c, isOnline } : c));
       setSelectedChat(prev => prev?.otherUser?._id?.toString() === uid?.toString() ? { ...prev, isOnline } : prev);
+    };
     const onReactionUpdated = ({ messageId, reactions }) => setMessages(prev => prev.map(m => m._id?.toString() === messageId?.toString() ? { ...m, reactions } : m));
 
     s.on('receive_message',      onReceiveMessage);
