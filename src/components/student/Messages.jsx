@@ -320,13 +320,14 @@ export default function StudentMessages() {
   const emojiRef     = useRef(null);
   const socket       = useSocket();
   const messagesContainerRef = useRef(null);
+  // Ref so socket listeners always see the latest selectedChat without
+  // needing to be in the dependency array (which would cause listener churn)
+  const selectedChatRef = useRef(null);
 
-  // ─── Socket init ──────────────────────────
+  // ─── Keep selectedChatRef in sync ────────
   useEffect(() => {
-    if (!userId || !socket) return;
-    
-    // Joint logic for initial socket events if needed
-  }, [userId, socket]);
+    selectedChatRef.current = selectedChat;
+  }, [selectedChat]);
 
   // ─── Load conversations ───────────────────
   useEffect(() => {
@@ -340,8 +341,9 @@ export default function StudentMessages() {
 
   // ─── Select conversation ──────────────────
   const handleSelectChat = useCallback(async (conv) => {
-    if (selectedChat?._id && socket) {
-      socket.emit('conversation_closed', { conversationId: selectedChat._id, userId });
+    const prev = selectedChatRef.current;
+    if (prev?._id && socket) {
+      socket.emit('conversation_closed', { conversationId: prev._id, userId });
     }
     setSelectedChat(conv);
     setShowChatOnMobile(true);
@@ -369,7 +371,8 @@ export default function StudentMessages() {
     } finally {
       setMsgLoading(false);
     }
-  }, [selectedChat, userId]);
+  // socket & selectedChatRef.current intentionally NOT in deps — ref keeps it fresh
+  }, [socket, userId]);
 
   // ─── Auto-open from location.state ────────
   useEffect(() => {
@@ -407,12 +410,16 @@ export default function StudentMessages() {
   }, [location.state, conversations, convLoading, navigate, userId, handleSelectChat]);
 
   // ─── Socket events ────────────────────────
+  // NOTE: selectedChat is accessed via selectedChatRef so this effect only
+  // runs when socket or userId changes — NOT on every conversation switch.
+  // This prevents the listener churn that was causing message_sent to be missed.
   useEffect(() => {
     if (!socket) return;
     const s = socket;
 
     const onReceiveMessage = (msg) => {
-      if (msg.conversationId?.toString() === selectedChat?._id?.toString()) {
+      const activeChat = selectedChatRef.current;
+      if (msg.conversationId?.toString() === activeChat?._id?.toString()) {
         setMessages(prev => {
           const exists = prev.some(m => m._id?.toString() === msg._id?.toString());
           return exists ? prev : [...prev, { ...msg, status: 'read' }];
@@ -421,17 +428,30 @@ export default function StudentMessages() {
       }
       setConversations(prev => prev.map(c =>
         c._id?.toString() === msg.conversationId?.toString()
-          ? { ...c, lastMessage: msg.content, unreadCount: c._id?.toString() === selectedChat?._id?.toString() ? 0 : (c.unreadCount || 0) + 1 }
+          ? {
+              ...c,
+              lastMessage: msg.content,
+              unreadCount: c._id?.toString() === activeChat?._id?.toString()
+                ? 0
+                : (c.unreadCount || 0) + 1
+            }
           : c
       ));
     };
 
     const onMessageSent = (msg) => {
-      console.log('✅ Message confirmed by server:', msg.tempId, msg._id);
+      console.log('✅ message_sent received:', msg.tempId, '→', msg._id);
+      // Replace the optimistic pending message with the confirmed server message
       setMessages(prev => prev.map(m => {
-        // Match by tempId
-        if (m._id === msg.tempId || (m.tempId && m.tempId === msg.tempId)) {
-          return { ...m, ...msg, status: 'sent', _id: msg._id };
+        if (m.tempId === msg.tempId || m._id === msg.tempId) {
+          return {
+            ...m,
+            _id: msg._id,
+            tempId: undefined,
+            status: 'sent',
+            conversationId: msg.conversationId,
+            createdAt: msg.timestamp || m.createdAt,
+          };
         }
         return m;
       }));
@@ -440,14 +460,13 @@ export default function StudentMessages() {
     const onMessageError = ({ error, tempId }) => {
       console.error('❌ Message error:', error, tempId);
       toast.error(`Failed to send: ${error}`);
-      setMessages(prev => prev.map(m => 
-        (m._id === tempId) ? { ...m, status: 'error' } : m
+      setMessages(prev => prev.map(m =>
+        (m.tempId === tempId || m._id === tempId) ? { ...m, status: 'error' } : m
       ));
     };
 
     const onUserTyping = ({ userId: typingId, senderName, isTyping }) => {
       if (typingId === userId) return;
-      console.log('⌨️ Typing update:', typingId, isTyping);
       setTypingUsers(prev => {
         if (isTyping) return { ...prev, [typingId]: senderName || 'Someone' };
         const next = { ...prev };
@@ -457,7 +476,9 @@ export default function StudentMessages() {
     };
 
     const onReadReceipt = ({ messageId }) => {
-      setMessages(prev => prev.map(m => m._id?.toString() === messageId?.toString() ? { ...m, status: 'read' } : m));
+      setMessages(prev => prev.map(m =>
+        m._id?.toString() === messageId?.toString() ? { ...m, status: 'read' } : m
+      ));
     };
 
     const onUnreadUpdated = ({ conversationId, unreadCount }) => {
@@ -516,7 +537,9 @@ export default function StudentMessages() {
       s.off('message_edited',       onMessageEdited);
       s.off('message_deleted',      onMessageDeleted);
     };
-  }, [socket, selectedChat, userId]);
+  // ⚠️ Intentionally omit selectedChat — use selectedChatRef instead
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket, userId]);
 
   // ─── Auto-scroll ──────────────────────────
   useEffect(() => {

@@ -1,4 +1,442 @@
-# 📨 GigHive — User Connection & Messaging SRS
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+EmployerSidebar.jsx:69 Uncaught ReferenceError: userId is not defined
+    at EmployerSidebar (EmployerSidebar.jsx:69:7)
+    at Object.react_stack_bottom_frame (react-dom_client.js?v=422f1524:17424:20)
+    at renderWithHooks (react-dom_client.js?v=422f1524:4206:24)
+    at updateFunctionComponent (react-dom_client.js?v=422f1524:6619:21)
+    at beginWork (react-dom_client.js?v=422f1524:7654:20)
+    at runWithFiberInDEV (react-dom_client.js?v=422f1524:1485:72)
+    at performUnitOfWork (react-dom_client.js?v=422f1524:10868:98)
+    at workLoopSync (react-dom_client.js?v=422f1524:10728:43)
+    at renderRootSync (react-dom_client.js?v=422f1524:10711:13)
+    at performWorkOnRoot (react-dom_client.js?v=422f1524:10359:46)Understand this error
+react-dom_client.js?v=422f1524:6229 An error occurred in the <EmployerSidebar> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+defaultOnUncaughtError @ react-dom_client.js?v=422f1524:6229Understand this warning
+EmployerSidebar.jsx:69 Uncaught ReferenceError: userId is not defined
+    at EmployerSidebar (EmployerSidebar.jsx:69:7)
+    at Object.react_stack_bottom_frame (react-dom_client.js?v=422f1524:17424:20)
+    at renderWithHooks (react-dom_client.js?v=422f1524:4206:24)
+    at updateFunctionComponent (react-dom_client.js?v=422f1524:6619:21)
+    at beginWork (react-dom_client.js?v=422f1524:7654:20)
+    at runWithFiberInDEV (react-dom_client.js?v=422f1524:1485:72)
+    at performUnitOfWork (react-dom_client.js?v=422f1524:10868:98)
+    at workLoopSync (react-dom_client.js?v=422f1524:10728:43)
+    at renderRootSync (react-dom_client.js?v=422f1524:10711:13)
+    at performWorkOnRoot (react-dom_client.js?v=422f1524:10359:46)
+(anonymous) @ EmployerSidebar.jsx:69
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<EmployerSidebar>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+EmployerDashboard @ EmployerDashboard.jsx:27
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<EmployerDashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+AppRoutes @ App.jsx:81
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+(anonymous) @ App.jsx:118
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608Understand this error
+@react-refresh:208 An error occurred in the <EmployerSidebar> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+defaultOnUncaughtError @ react-dom_client.js?v=422f1524:6229
+logUncaughtError @ react-dom_client.js?v=422f1524:6283
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+lane.callback @ react-dom_client.js?v=422f1524:6311
+callCallback @ react-dom_client.js?v=422f1524:4097
+commitCallbacks @ react-dom_client.js?v=422f1524:4109
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1487
+commitLayoutEffectOnFiber @ react-dom_client.js?v=422f1524:9029
+flushLayoutEffects @ react-dom_client.js?v=422f1524:11174
+commitRoot @ react-dom_client.js?v=422f1524:11080
+commitRootWhenReady @ react-dom_client.js?v=422f1524:10512
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10457
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<EmployerSidebar>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+EmployerDashboard @ EmployerDashboard.jsx:27
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<EmployerDashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+AppRoutes @ App.jsx:81
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+(anonymous) @ App.jsx:118
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608Understand this warning
+EmployerSidebar.jsx:69 Uncaught ReferenceError: userId is not defined
+    at EmployerSidebar (EmployerSidebar.jsx:69:7)
+    at Object.react_stack_bottom_frame (react-dom_client.js?v=422f1524:17424:20)
+    at renderWithHooks (react-dom_client.js?v=422f1524:4206:24)
+    at updateFunctionComponent (react-dom_client.js?v=422f1524:6619:21)
+    at beginWork (react-dom_client.js?v=422f1524:7654:20)
+    at runWithFiberInDEV (react-dom_client.js?v=422f1524:1485:72)
+    at performUnitOfWork (react-dom_client.js?v=422f1524:10868:98)
+    at workLoopSync (react-dom_client.js?v=422f1524:10728:43)
+    at renderRootSync (react-dom_client.js?v=422f1524:10711:13)
+    at performWorkOnRoot (react-dom_client.js?v=422f1524:10359:46)
+(anonymous) @ EmployerSidebar.jsx:69
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<EmployerSidebar>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+EmployerDashboard @ EmployerDashboard.jsx:27
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<EmployerDashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+AppRoutes @ App.jsx:81
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+(anonymous) @ App.jsx:118
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608Understand this error
+@react-refresh:208 An error occurred in the <EmployerSidebar> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+defaultOnUncaughtError @ react-dom_client.js?v=422f1524:6229
+logUncaughtError @ react-dom_client.js?v=422f1524:6283
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+lane.callback @ react-dom_client.js?v=422f1524:6311
+callCallback @ react-dom_client.js?v=422f1524:4097
+commitCallbacks @ react-dom_client.js?v=422f1524:4109
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1487
+commitLayoutEffectOnFiber @ react-dom_client.js?v=422f1524:9029
+flushLayoutEffects @ react-dom_client.js?v=422f1524:11174
+commitRoot @ react-dom_client.js?v=422f1524:11080
+commitRootWhenReady @ react-dom_client.js?v=422f1524:10512
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10457
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<EmployerSidebar>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+EmployerDashboard @ EmployerDashboard.jsx:27
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<EmployerDashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+AppRoutes @ App.jsx:81
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+(anonymous) @ App.jsx:118
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608Understand this warning
+EmployerSidebar.jsx:69 Uncaught ReferenceError: userId is not defined
+    at EmployerSidebar (EmployerSidebar.jsx:69:7)
+    at Object.react_stack_bottom_frame (react-dom_client.js?v=422f1524:17424:20)
+    at renderWithHooks (react-dom_client.js?v=422f1524:4206:24)
+    at updateFunctionComponent (react-dom_client.js?v=422f1524:6619:21)
+    at beginWork (react-dom_client.js?v=422f1524:7654:20)
+    at runWithFiberInDEV (react-dom_client.js?v=422f1524:1485:72)
+    at performUnitOfWork (react-dom_client.js?v=422f1524:10868:98)
+    at workLoopSync (react-dom_client.js?v=422f1524:10728:43)
+    at renderRootSync (react-dom_client.js?v=422f1524:10711:13)
+    at performWorkOnRoot (react-dom_client.js?v=422f1524:10359:46)
+(anonymous) @ EmployerSidebar.jsx:69
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<EmployerSidebar>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+EmployerDashboard @ EmployerDashboard.jsx:27
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<EmployerDashboard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+AppRoutes @ App.jsx:81
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608
+<AppRoutes>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=422f1524:250
+(anonymous) @ App.jsx:118
+react_stack_bottom_frame @ react-dom_client.js?v=422f1524:17424
+renderWithHooks @ react-dom_client.js?v=422f1524:4206
+updateFunctionComponent @ react-dom_client.js?v=422f1524:6619
+beginWork @ react-dom_client.js?v=422f1524:7654
+runWithFiberInDEV @ react-dom_client.js?v=422f1524:1485
+performUnitOfWork @ react-dom_client.js?v=422f1524:10868
+workLoopSync @ react-dom_client.js?v=422f1524:10728
+renderRootSync @ react-dom_client.js?v=422f1524:10711
+performWorkOnRoot @ react-dom_client.js?v=422f1524:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=422f1524:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=422f1524:11536
+flushSyncWork$1 @ react-dom_client.js?v=422f1524:10567
+scheduleRoot @ react-dom_client.js?v=422f1524:360
+(anonymous) @ @react-refresh:208
+performReactRefresh @ @react-refresh:190
+(anonymous) @ @react-refresh:608Understand this error
+@react-refresh:208 An error occurred in the <EmployerSidebar> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.# 📨 GigHive — User Connection & Messaging SRS
 
 **Software Requirements Specification**  
 How students and employers discover, connect, and message each other.

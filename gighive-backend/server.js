@@ -149,7 +149,7 @@ io.on('connection', (socket) => {
 
   socket.on('send_message', async (data) => {
     try {
-      const { senderId, receiverId, content, conversationId, gigId, tempId } = data;
+      const { senderId, receiverId, content, conversationId, gigId, tempId, replyTo } = data;
 
       if (!senderId || !receiverId || !content?.trim()) {
         return socket.emit('message_error', { error: 'Missing required fields', tempId });
@@ -178,7 +178,8 @@ io.on('connection', (socket) => {
         contentType: data.contentType || 'text',
         status: 'sent',
         conversationId: conversation._id,
-        gigId: gigId || null
+        gigId: gigId || null,
+        replyTo: replyTo || null,
       });
       await message.save();
 
@@ -211,15 +212,19 @@ io.on('connection', (socket) => {
         timestamp: message.createdAt
       });
 
-      // ✅ Deliver to everyone in the room (including other tabs of sender)
-      io.to(conversation._id.toString()).emit('receive_message', {
+      // ✅ Deliver to everyone in the room EXCEPT the sender
+      // Sender already gets 'message_sent' — echoing 'receive_message' back would
+      // cause the pending temp message to stay stuck while a duplicate appears.
+      socket.to(conversation._id.toString()).emit('receive_message', {
         _id: message._id,
         senderId,
+        receiverId,
         content: message.content,
         status: 'delivered',
         createdAt: message.createdAt,
         conversationId: conversation._id,
-        senderName: data.senderName || 'User'
+        senderName: data.senderName || 'User',
+        replyTo: data.replyTo || null,
       });
 
       // ✅ Notify receiver of updated unread count

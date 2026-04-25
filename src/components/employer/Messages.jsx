@@ -291,11 +291,13 @@ export function Messages() {
   const emojiRef    = useRef(null);
   const messagesContainerRef = useRef(null);
   const socket      = useSocket();
+  // Ref so socket listeners always see latest selectedChat without causing listener churn
+  const selectedChatRef = useRef(null);
 
+  // ─── Keep selectedChatRef in sync ────────
   useEffect(() => {
-    if (!userId || !socket) return;
-    // Initial logic if needed
-  }, [userId, socket]);
+    selectedChatRef.current = selectedChat;
+  }, [selectedChat]);
 
   useEffect(() => {
     if (!userId) return;
@@ -307,8 +309,9 @@ export function Messages() {
   }, [userId]);
 
   const handleSelectChat = useCallback(async (conv) => {
-    if (selectedChat?._id && socket) {
-      socket.emit('conversation_closed', { conversationId: selectedChat._id, userId });
+    const prev = selectedChatRef.current;
+    if (prev?._id && socket) {
+      socket.emit('conversation_closed', { conversationId: prev._id, userId });
     }
     setSelectedChat(conv);
     setShowChatOnMobile(true);
@@ -332,7 +335,7 @@ export function Messages() {
       }
     } catch (err) { console.error(err); }
     finally { setMsgLoading(false); }
-  }, [selectedChat, socket, userId]);
+  }, [socket, userId]);
 
   // ─── Auto-open from location.state ────
   useEffect(() => {
@@ -366,12 +369,14 @@ export function Messages() {
   }, [location.state, conversations, convLoading, navigate, userId, handleSelectChat]);
 
   // ─── Socket events ────────────────────────
+  // NOTE: selectedChat accessed via ref to avoid listener churn on every chat switch
   useEffect(() => {
     if (!socket) return;
     const s = socket;
 
     const onReceiveMessage = (msg) => {
-      if (msg.conversationId?.toString() === selectedChat?._id?.toString()) {
+      const activeChat = selectedChatRef.current;
+      if (msg.conversationId?.toString() === activeChat?._id?.toString()) {
         setMessages(prev => {
           const exists = prev.some(m => m._id?.toString() === msg._id?.toString());
           return exists ? prev : [...prev, { ...msg, status: 'read' }];
@@ -380,18 +385,39 @@ export function Messages() {
       }
       setConversations(prev => prev.map(c =>
         c._id?.toString() === msg.conversationId?.toString()
-          ? { ...c, lastMessage: msg.content, unreadCount: c._id?.toString() === selectedChat?._id?.toString() ? 0 : (c.unreadCount || 0) + 1 }
+          ? {
+              ...c,
+              lastMessage: msg.content,
+              unreadCount: c._id?.toString() === activeChat?._id?.toString()
+                ? 0
+                : (c.unreadCount || 0) + 1
+            }
           : c
       ));
     };
 
     const onMessageSent = (msg) => {
-      setMessages(prev => prev.map(m => (m._id === msg.tempId || m.tempId === msg.tempId) ? { ...m, ...msg, status: 'sent', _id: msg._id } : m));
+      console.log('✅ message_sent received:', msg.tempId, '→', msg._id);
+      setMessages(prev => prev.map(m => {
+        if (m.tempId === msg.tempId || m._id === msg.tempId) {
+          return {
+            ...m,
+            _id: msg._id,
+            tempId: undefined,
+            status: 'sent',
+            conversationId: msg.conversationId,
+            createdAt: msg.timestamp || m.createdAt,
+          };
+        }
+        return m;
+      }));
     };
 
     const onMessageError = ({ error, tempId }) => {
       toast.error(`Error: ${error}`);
-      setMessages(prev => prev.map(m => (m._id === tempId || m.tempId === tempId) ? { ...m, status: 'error' } : m));
+      setMessages(prev => prev.map(m =>
+        (m.tempId === tempId || m._id === tempId) ? { ...m, status: 'error' } : m
+      ));
     };
 
     const onUserTyping = ({ userId: tid, senderName, isTyping }) => {
@@ -401,20 +427,35 @@ export function Messages() {
         const next = { ...prev }; delete next[tid]; return next;
       });
     };
-    const onReadReceipt  = ({ messageId }) => setMessages(prev => prev.map(m => m._id?.toString() === messageId?.toString() ? { ...m, status: 'read' } : m));
-    const onUnreadUpdated = ({ conversationId, unreadCount }) => setConversations(prev => prev.map(c => c._id?.toString() === conversationId?.toString() ? { ...c, unreadCount } : c));
+    const onReadReceipt  = ({ messageId }) =>
+      setMessages(prev => prev.map(m =>
+        m._id?.toString() === messageId?.toString() ? { ...m, status: 'read' } : m
+      ));
+    const onUnreadUpdated = ({ conversationId, unreadCount }) =>
+      setConversations(prev => prev.map(c =>
+        c._id?.toString() === conversationId?.toString() ? { ...c, unreadCount } : c
+      ));
     const onStatusChanged = ({ userId: uid, isOnline }) => {
-      setConversations(prev => prev.map(c => c.otherUser?._id?.toString() === uid?.toString() ? { ...c, isOnline } : c));
-      setSelectedChat(prev => prev?.otherUser?._id?.toString() === uid?.toString() ? { ...prev, isOnline } : prev);
+      setConversations(prev => prev.map(c =>
+        c.otherUser?._id?.toString() === uid?.toString() ? { ...c, isOnline } : c
+      ));
+      setSelectedChat(prev =>
+        prev?.otherUser?._id?.toString() === uid?.toString() ? { ...prev, isOnline } : prev
+      );
     };
-    const onReactionUpdated = ({ messageId, reactions }) => setMessages(prev => prev.map(m => m._id?.toString() === messageId?.toString() ? { ...m, reactions } : m));
-
+    const onReactionUpdated = ({ messageId, reactions }) =>
+      setMessages(prev => prev.map(m =>
+        m._id?.toString() === messageId?.toString() ? { ...m, reactions } : m
+      ));
     const onMessageEdited = ({ messageId, content, isEdited, editedAt }) => {
-      setMessages(prev => prev.map(m => m._id?.toString() === messageId?.toString() ? { ...m, content, isEdited, editedAt } : m));
+      setMessages(prev => prev.map(m =>
+        m._id?.toString() === messageId?.toString() ? { ...m, content, isEdited, editedAt } : m
+      ));
     };
-
     const onMessageDeleted = ({ messageId }) => {
-      setMessages(prev => prev.map(m => m._id?.toString() === messageId?.toString() ? { ...m, isDeleted: true } : m));
+      setMessages(prev => prev.map(m =>
+        m._id?.toString() === messageId?.toString() ? { ...m, isDeleted: true } : m
+      ));
     };
 
     s.on('receive_message',      onReceiveMessage);
@@ -440,7 +481,9 @@ export function Messages() {
       s.off('message_edited',       onMessageEdited);
       s.off('message_deleted',      onMessageDeleted);
     };
-  }, [socket, selectedChat, userId]);
+  // ⚠️ Intentionally omit selectedChat — use selectedChatRef instead
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket, userId]);
 
   useEffect(() => {
     const container = messagesContainerRef.current;
@@ -504,10 +547,14 @@ export function Messages() {
     if (!text || !selectedChat) return;
     const tempId = `temp_${Date.now()}`;
     const tempMsg = {
-      _id: tempId, content: text, senderId: userId,
+      _id: tempId,
+      tempId,           // explicit so onMessageSent can match by m.tempId
+      content: text,
+      senderId: userId,
       receiverId: selectedChat.otherUser?._id,
       conversationId: selectedChat._id,
-      status: 'pending', createdAt: new Date().toISOString(),
+      status: 'pending',
+      createdAt: new Date().toISOString(),
       replyTo: replyTo || null,
     };
     setMessages(prev => [...prev, tempMsg]);
