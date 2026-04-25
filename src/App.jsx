@@ -1,155 +1,130 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { io } from 'socket.io-client';
-import { useState, useEffect } from 'react';
-import { ProtectedRoute } from './components/employer/ProtectedRoute'; 
-import { PostGig } from './components/employer/PostGig';
-import  Applications  from './components/employer/Applications.jsx';
-import { Profile } from './components/student/Profile';
-import  {Messages}  from './components/employer/Messages';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
+
 // Layouts
 import { PublicLayout } from './components/layout/PublicLayout';
 
 // Public Pages
-import { Home } from './components/pages/Home';
-import { HowItWorks } from './components/pages/HowItWorks';
-import { ForStudents } from './components/pages/ForStudents';
+import { Home }         from './components/pages/Home';
+import { HowItWorks }   from './components/pages/HowItWorks';
+import { ForStudents }  from './components/pages/ForStudents';
 import { ForEmployers } from './components/pages/ForEmployers';
-import { PopularGigs } from './components/pages/PopularGigs';
-import { AboutUs } from './components/pages/AboutUs';
+import { PopularGigs }  from './components/pages/PopularGigs';
+import { AboutUs }      from './components/pages/AboutUs';
 
 // Auth Pages
-import { Login } from './components/auth/Login';
+import { Login }  from './components/auth/Login';
 import { Signup } from './components/auth/Signup';
 
+// Protected Pages
+import { PostGig }     from './components/employer/PostGig';
+import Applications    from './components/employer/Applications.jsx';
+import { Profile }     from './components/student/Profile';
+import { Messages }    from './components/employer/Messages';
+
 // Dashboards
-import { StudentDashboard } from './components/dashboards/StudentDashboard';
-import  EmployerDashboard  from './components/dashboards/EmployerDashboard';
-import { AdminDashboard } from './components/dashboards/AdminDashboard';
+import { StudentDashboard }  from './components/dashboards/StudentDashboard';
+import EmployerDashboard     from './components/dashboards/EmployerDashboard';
+import { AdminDashboard }    from './components/dashboards/AdminDashboard';
 
-export default function App() {
-  const [user, setUser] = useState(() => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-    const id = localStorage.getItem('userId');
-    const name = localStorage.getItem('userName');
-    const email = localStorage.getItem('userEmail');
+/**
+ * 🔐 App Component — Auth-provider wrapper + animated route transitions
+ */
+function AppRoutes() {
+  const location = useLocation();
 
-    if (token && role) {
-      return { token, id, name, email, role };
-    }
-    return null;
-  });
-
-  const [userType, setUserType] = useState(() => localStorage.getItem('role'));
-
-  const handleLogin = (userData, type) => {
-    setUser(userData);
-    setUserType(type);
-
-    // Persist to localStorage
-    localStorage.setItem('token', userData.token);
-    localStorage.setItem('role', userData.role || type);
-    localStorage.setItem('userId', userData.id);
-    localStorage.setItem('userName', userData.name || '');
-    localStorage.setItem('userEmail', userData.email || '');
+  // Create a base key so dashboards don't remount on inner navigations
+  const getLayoutKey = (pathname) => {
+    if (pathname.startsWith('/student-dashboard')) return 'student-dashboard';
+    if (pathname.startsWith('/employer-dashboard')) return 'employer-dashboard';
+    if (pathname.startsWith('/admin-dashboard')) return 'admin-dashboard';
+    return pathname;
   };
-
-  const handleLogout = () => {
-    setUser(null);
-    setUserType(null);
-    localStorage.clear();
-  };
-
+  const layoutKey = getLayoutKey(location.pathname);
 
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes - All wrapped in PublicLayout */}
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={layoutKey}>
+        {/* ─── Public Routes ─── */}
         <Route element={<PublicLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/for-students" element={<ForStudents />} />
-          <Route path="/for-employers" element={<ForEmployers />} />
-          <Route path="/popular-gigs" element={<PopularGigs />} />
-          <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/applications" element={<Applications user={user} />} />
-          <Route path="/profile/:id" element={<Profile user={user} />} />
-          <Route path="/employer-dashboard/messages/:userId" element={<Messages user={user} />} />
-          {/* <Route path="/employer-dashboard/messages" element={<Messages user={user} />} /> */}
+          <Route path="/"               element={<Home />} />
+          <Route path="/how-it-works"   element={<HowItWorks />} />
+          <Route path="/for-students"   element={<ForStudents />} />
+          <Route path="/for-employers"  element={<ForEmployers />} />
+          <Route path="/popular-gigs"   element={<PopularGigs />} />
+          <Route path="/about-us"       element={<AboutUs />} />
+          <Route path="/applications"   element={<Applications />} />
+          <Route path="/profile/:id"    element={<Profile />} />
+          <Route
+            path="/employer-dashboard/messages/:userId"
+            element={
+              <ProtectedRoute requiredRole="employer">
+                <Messages />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
-        {/* Auth routes don't use the main layout */}
-        <Route path="/login" element={<Login onLogin={handleLogin} />} />
-        <Route path="/signup" element={<Signup onSignup={handleLogin} />} />
+        {/* ─── Auth Routes (redirect away if already logged in) ─── */}
+        <Route path="/login"  element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
 
-        {/* Protected Dashboard Routes */}
+        {/* ─── Protected Dashboard Routes ─── */}
         <Route
           path="/student-dashboard/*"
           element={
-            user && userType === 'student' ? (
-              <StudentDashboard user={user} onLogout={handleLogout} />
-            ) : (
-              <Navigate to="/login" />
-            )
+            <ProtectedRoute requiredRole="student">
+              <StudentDashboard />
+            </ProtectedRoute>
           }
         />
-
         <Route
           path="/employer-dashboard/*"
           element={
-            user && userType === 'employer' ? (
-              <EmployerDashboard user={user} onLogout={handleLogout} />
-            ) : (
-              <Navigate to="/login" />
-            )
+            <ProtectedRoute requiredRole="employer">
+              <EmployerDashboard />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin-dashboard/*"
           element={
-            user && userType === 'admin' ? (
-              <AdminDashboard user={user} onLogout={handleLogout} />
-            ) : (
-              <Navigate to="/login" />
-            )
+            <ProtectedRoute requiredRole="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
           }
         />
 
-        {/* Redirect based on user type */}
+        {/* ─── Protected Other Pages ─── */}
         <Route
-          path="/dashboard"
+          path="/post-gig"
           element={
-            user ? (
-              userType === 'student' ? (
-                <Navigate to="/student-dashboard" />
-              ) : userType === 'employer' ? (
-                <Navigate to="/employer-dashboard" />
-              ) : userType === 'admin' ? (
-                <Navigate to="/admin-dashboard" />
-              ) : (
-                <Navigate to="/login" />
-              )
-            ) : (
-              <Navigate to="/login" />
-            )
+            <ProtectedRoute requiredRole="employer">
+              <PostGig />
+            </ProtectedRoute>
           }
         />
-        <Route
-  path="/post-gig"
-  element={
-    <ProtectedRoute>
-      <PostGig />
-    </ProtectedRoute>
-  }
-/>
 
-
-        {/* Catch-all route for unmatched paths */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* ─── Redirects ─── */}
+        <Route path="/dashboard" element={<Navigate to="/student-dashboard" replace />} />
+        <Route path="*"          element={<Navigate to="/" replace />} />
       </Routes>
-      <ToastContainer position="top-right" autoClose={3000} />
-    </Router>
+    </AnimatePresence>
   );
 }
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+        <ToastContainer position="top-right" autoClose={3000} />
+      </Router>
+    </AuthProvider>
+  );
+}
+

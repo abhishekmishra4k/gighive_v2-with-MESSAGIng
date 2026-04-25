@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import apiClient from '../../lib/apiClient';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -23,10 +24,8 @@ export function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await fetch("http://localhost:5001/api/profile/me", { headers: { Authorization: `Bearer ${token}` } });
-        const data = await res.json();
-        setUser(data);
+        const res = await apiClient.get('/profile/me');
+        setUser(res.data);
       } catch (err) {
         console.error('❌ Failed to fetch user profile:', err);
       } finally {

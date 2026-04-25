@@ -172,3 +172,119 @@ exports.verifyOtp = async (req, res) => {
     res.status(500).send('Server. Please try signing up again first, then attempt to log in.');
   }
 };
+
+// Returns current authenticated user details
+exports.me = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ msg: 'Not authenticated' });
+    }
+
+    const user = await User.findById(userId).select('-password -otp -otpExpires');
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    res.json({ user });
+  } catch (err) {
+    console.error('--- GET /me ERROR ---', err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+// 🔍 Search users by name or email
+exports.searchUsers = async (req, res) => {
+  try {
+    const { q = '', role, limit = 20, skip = 0 } = req.query;
+    const requestingUserId = req.user?.id;
+
+    if (!q.trim()) {
+      return res.status(400).json({ error: 'Search query (q) is required' });
+    }
+
+    const filter = {
+      _id: { $ne: requestingUserId }, // exclude self
+      $or: [
+        { name:  { $regex: q.trim(), $options: 'i' } },
+        { email: { $regex: q.trim(), $options: 'i' } },
+      ],
+    };
+
+    if (role && ['student', 'employer'].includes(role)) {
+      filter.role = role;
+    }
+
+    const UserStatus = require('../models/userStatus');
+
+    const users = await User.find(filter)
+      .select('name email role avatar createdAt')
+      .sort({ name: 1 })
+      .skip(Number(skip))
+      .limit(Number(limit))
+      .lean();
+
+    const total = await User.countDocuments(filter);
+
+    // Attach online status
+    const enriched = await Promise.all(
+      users.map(async (u) => {
+        const status = await UserStatus.findOne({ userId: u._id }).lean();
+        return {
+          ...u,
+          isOnline: status?.isOnline || false,
+          lastSeen: status?.lastSeen || null,
+        };
+      })
+    );
+
+    res.json({ success: true, users: enriched, total });
+  } catch (err) {
+    console.error('❌ searchUsers error:', err);
+    res.status(500).json({ error: 'Failed to search users', details: err.message });
+  }
+};
+
+// 📖 Directory — paginated list of all users
+exports.getDirectory = async (req, res) => {
+  try {
+    const { role, limit = 20, skip = 0, sortBy = 'name' } = req.query;
+    const requestingUserId = req.user?.id;
+
+    const filter = { _id: { $ne: requestingUserId } };
+    if (role && ['student', 'employer'].includes(role)) {
+      filter.role = role;
+    }
+
+    const sortMap = { name: { name: 1 }, createdAt: { createdAt: -1 } };
+    const sort = sortMap[sortBy] || { name: 1 };
+
+    const UserStatus = require('../models/userStatus');
+
+    const users = await User.find(filter)
+      .select('name email role avatar createdAt')
+      .sort(sort)
+      .skip(Number(skip))
+      .limit(Number(limit))
+      .lean();
+
+    const total = await User.countDocuments(filter);
+
+    const enriched = await Promise.all(
+      users.map(async (u) => {
+        const status = await UserStatus.findOne({ userId: u._id }).lean();
+        return {
+          ...u,
+          isOnline: status?.isOnline || false,
+          lastSeen: status?.lastSeen || null,
+        };
+      })
+    );
+
+    res.json({ success: true, users: enriched, total });
+  } catch (err) {
+    console.error('❌ getDirectory error:', err);
+    res.status(500).json({ error: 'Failed to get directory', details: err.message });
+  }
+};
+

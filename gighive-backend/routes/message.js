@@ -1,22 +1,40 @@
 const express = require('express');
 const router = express.Router();
-const Message = require('../models/message');
+const { auth } = require('../middleware/user');
+const messageController = require('../controllers/messageController');
 
-router.post('/send', async (req, res) => {
-  const { senderId, receiverId, content } = req.body;
+// 📤 Send a message
+router.post('/send', auth, messageController.sendMessage);
 
-  if (!senderId || !receiverId || !content?.trim()) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
+// 📥 Get conversation history
+router.get('/conversation/:conversationId', auth, messageController.getConversationHistory);
 
-  try {
-    const savedMessage = await Message.create({ senderId, receiverId, content });
-    res.status(201).json(savedMessage);
-  } catch (err) {
-    console.error('Error saving message:', err);
-    res.status(500).json({ error: 'Failed to save message' });
-  }
-});
+// 💬 Get all conversations for a user
+router.get('/conversations/:userId', auth, messageController.getUserConversations);
 
+// 🔗 Start or find existing conversation (MUST be before /:messageId wildcard)
+router.post('/conversations/start', auth, messageController.startConversation);
+
+// ✅ Mark messages as read
+router.put('/mark-as-read', auth, messageController.markAsRead);
+
+// 👤 Get user online status
+router.get('/user-status/:userId', messageController.getUserStatus);
+
+// 🔍 Search messages
+router.get('/search', auth, messageController.searchMessages);
+
+// 🗑️ Delete message
+router.delete('/:messageId', auth, messageController.deleteMessage);
+
+// ✏️ Edit message
+router.put('/:messageId/edit', auth, messageController.editMessage);
+
+// 😀 React to a message
+router.post('/:messageId/react', auth, messageController.reactToMessage);
+
+// 📤 Upload media
+router.post('/upload', auth, messageController.uploadMedia);
 
 module.exports = router;
+

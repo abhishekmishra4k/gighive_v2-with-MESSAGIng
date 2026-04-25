@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
+import apiClient from '../../lib/apiClient';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -58,26 +59,16 @@ export function PostGig() {
       return;
     }
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      toast.error('You must be logged in to upload a video.');
-      return;
-    }
-
     setVideoUploading(true);
     try {
       const formDataUpload = new FormData();
       formDataUpload.append('gigReel', file);
 
-      const res = await fetch('http://localhost:5001/api/gigs/upload-reel', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formDataUpload,
+      const res = await apiClient.post('/gigs/upload-reel', formDataUpload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      const data = await res.json();
+      const data = res.data;
       setFormData(prev => ({ ...prev, videoUrl: data.url }));
     } catch (err) {
       console.error('Upload failed:', err);
@@ -90,23 +81,8 @@ export function PostGig() {
   const triggerVideoInput = () => {
     videoInputRef.current?.click();
   };
-  const token = localStorage.getItem('token');
-  try {
-    const decoded = JSON.parse(atob(token.split('.')[1]));
-    console.log('📦 Decoded token payload:', decoded);
-  } catch (err) {
-    console.error('❌ Failed to decode token:', err);
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const token = localStorage.getItem('token');
-    const isValidJWT = token && typeof token === 'string' && token.split('.').length === 3;
-    if (!isValidJWT) {
-      toast.error('Invalid or missing token. Please log in again.');
-      return;
-    }
 
     const payload = {
       ...formData,
@@ -120,20 +96,10 @@ export function PostGig() {
     console.log('form=========data==========', payload)
 
     try {
-      console.log('Sending token:', token);
+      const res = await apiClient.post('/gigs', payload);
+      const data = res.data;
 
-      const res = await fetch('http://localhost:5001/api/gigs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
+      if (res.status === 200 || res.status === 201) {
         toast.success('Gig posted successfully!');
         setFormData({
           title: '',
@@ -166,40 +132,16 @@ export function PostGig() {
   };
 
   const fetchGigs = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.warn('Skipping fetch: no token found');
-      return;
-    }
-
     try {
-      const res = await fetch('http://localhost:5001/api/gigs', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-      setPosts(data);
+      const res = await apiClient.get('/gigs');
+      setPosts(res.data);
     } catch (err) {
       console.error('Failed to fetch gigs:', err);
     }
   };
 
   useEffect(() => {
-    try {
-      const token = localStorage.getItem('token');
-      console.log('Token in localStorage:', token);
-
-      const isValidJWT = token && typeof token === 'string' && token.split('.').length === 3;
-      if (isValidJWT) {
-        fetchGigs();
-      } else {
-        console.warn('⛔ Token missing or invalid. Skipping fetch.');
-      }
-    } catch (err) {
-      console.error('Error in useEffect:', err);
-    }
+    fetchGigs();
   }, []);
 
 

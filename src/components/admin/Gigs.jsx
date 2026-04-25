@@ -84,6 +84,7 @@
 // }
 
 import { useEffect, useState } from 'react';
+import apiClient from '../../lib/apiClient';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -98,12 +99,8 @@ export function Gigs({ user }) {
   useEffect(() => {
     const fetchGigs = async () => {
       try {
-        const res = await fetch('/api/gigs/all', {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
-        const data = await res.json();
+        const res = await apiClient.get('/gigs/all');
+        const data = res.data;
         setPendingGigs(data.filter(g => !g.verified && !g.rejected));
         setApprovedGigs(data.filter(g => g.verified));
         setRejectedGigs(data.filter(g => g.rejected));
@@ -117,13 +114,8 @@ export function Gigs({ user }) {
 
   const handleVerify = async (id) => {
     try {
-      const res = await fetch(`/api/gigs/${id}/verify`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-      const updated = await res.json();
+      const res = await apiClient.put(`/gigs/${id}/verify`);
+      const updated = res.data;
       setPendingGigs(prev => prev.filter(g => g._id !== id));
       setApprovedGigs(prev => [...prev, updated.gig]);
     } catch (err) {
@@ -133,13 +125,8 @@ export function Gigs({ user }) {
 
   const handleReject = async (id) => {
     try {
-      const res = await fetch(`/api/gigs/${id}/reject`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-      const updated = await res.json();
+      const res = await apiClient.put(`/gigs/${id}/reject`);
+      const updated = res.data;
       setPendingGigs(prev => prev.filter(g => g._id !== id));
       setRejectedGigs(prev => [...prev, updated.gig]);
     } catch (err) {

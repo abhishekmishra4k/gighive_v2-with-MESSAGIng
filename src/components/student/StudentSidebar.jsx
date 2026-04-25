@@ -1,8 +1,12 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Progress } from "../ui/progress";
+import { useAuth } from "../../context/AuthContext";
+import apiClient from "../../lib/apiClient";
+import { io } from "socket.io-client";
 import {
   Home,
   Search,
@@ -10,6 +14,7 @@ import {
   GraduationCap,
   Heart,
   Users,
+  Users2,
   MessageSquare,
   BarChart3,
   Award,
@@ -22,9 +27,76 @@ import {
   Upload,
 } from "lucide-react";
 
-export function StudentSidebar({ user, onLogout }) {
+export function StudentSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const userId = user?._id || user?.id;
+  const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
+
+  // ─── Fetch total unread count from conversations ───
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchUnread = async () => {
+      try {
+        const res = await apiClient.get(`/message/conversations/${userId}`);
+        const conversations = res.data?.conversations || [];
+        const total = conversations.reduce((sum, c) => {
+          // unreadCount is stored per-conversation; pick the one for this user
+          const isParticipant1 = c.participant1Id === userId || c.participant1Id?._id === userId;
+          return sum + (isParticipant1 ? (c.unreadCount1 || 0) : (c.unreadCount2 || 0));
+        }, 0);
+        setUnreadCount(total);
+      } catch {
+        // silently fail — badge just stays 0
+      }
+    };
+
+    fetchUnread();
+
+    // ─── Real-time socket updates ───
+    const socket = io(SOCKET_URL, { auth: { userId }, transports: ['websocket'] });
+
+    socket.on('unread_count_updated', ({ conversationId, unreadCount: delta }) => {
+      // Re-fetch to get accurate total (simpler than tracking per-conversation state)
+      fetchUnread();
+    });
+
+    socket.on('receive_message', () => {
+      // New message arrived — bump count
+      fetchUnread();
+    });
+
+    socket.on('message_read_receipt', () => {
+      // Messages were read somewhere — recalculate
+      fetchUnread();
+    });
+
+    return () => {
+      socket.off('unread_count_updated');
+      socket.off('receive_message');
+      socket.off('message_read_receipt');
+      socket.disconnect();
+    };
+  }, [userId]);
+
+  const messageBadge = unreadCount > 0
+    ? (unreadCount > 99 ? '99+' : String(unreadCount))
+    : null;
+
+  // Calculate profile completeness dynamically
+  const profileFields = ['name', 'email', 'college', 'bio', 'skills', 'avatar'];
+  const filled = profileFields.filter(f => user?.[f]).length;
+  const completeness = Math.round((filled / profileFields.length) * 100);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   const menuItems = [
     {
@@ -70,10 +142,16 @@ export function StudentSidebar({ user, onLogout }) {
       badge: null,
     },
     {
+      path: "/student-dashboard/people",
+      icon: Users2,
+      label: "People",
+      badge: null,
+    },
+    {
       path: "/student-dashboard/messages",
       icon: MessageSquare,
       label: "Messages",
-      badge: "2",
+      badge: messageBadge,
     },
     {
       path: "/student-dashboard/credits",
@@ -96,10 +174,13 @@ export function StudentSidebar({ user, onLogout }) {
   ];
 
   return (
-    <div
-      className={`bg-sidebar border-r border-sidebar-border transition-all duration-300 ${
-        collapsed ? "w-16" : "w-64"
+    <motion.div
+      className={`bg-sidebar border-r border-sidebar-border flex flex-col h-full overflow-hidden ${
+        collapsed ? 'w-16' : 'w-64'
       }`}
+      initial={{ x: -60, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 280, damping: 28 }}
     >
       <div className="flex flex-col h-full">
         {/* Header */}
@@ -150,9 +231,9 @@ export function StudentSidebar({ user, onLogout }) {
                   {user?.college || "University"}
                 </p>
                 <div className="mt-2">
-                  <Progress value={60} className="h-1" />
+                  <Progress value={completeness} className="h-1" />
                   <p className="text-xs text-sidebar-foreground/70 mt-1">
-                    Profile 60% complete
+                    Profile {completeness}% complete
                   </p>
                 </div>
               </div>
@@ -201,7 +282,7 @@ export function StudentSidebar({ user, onLogout }) {
             {/* Logout Button integrated into the menu */}
             <Button
               variant="ghost"
-              onClick={onLogout}
+              onClick={handleLogout}
               className={`w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground gap-3 border-none px-3 py-2 h-auto mt-1 ${
                 collapsed ? "px-3" : ""
               }`}
@@ -212,6 +293,6 @@ export function StudentSidebar({ user, onLogout }) {
           </div>
         </nav>
       </div>
-    </div>
+    </motion.div>
   );
 }

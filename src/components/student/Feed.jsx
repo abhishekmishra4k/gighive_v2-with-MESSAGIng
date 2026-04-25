@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import apiClient from '../../lib/apiClient';
 import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -10,8 +11,8 @@ export function Feed() {
   useEffect(() => {
     const fetchFeed = async () => {
       try {
-        const res = await fetch('http://localhost:5001/api/gigs');
-        const data = await res.json();
+        const res = await apiClient.get('/gigs');
+        const data = res.data;
         setPosts(
           data.map(gig => ({
             type: 'employer',

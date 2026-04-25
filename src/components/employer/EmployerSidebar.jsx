@@ -1,7 +1,11 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { useAuth } from "../../context/AuthContext";
+import apiClient from "../../lib/apiClient";
+import { io } from "socket.io-client";
 import {
   Plus,
   FileText,
@@ -13,11 +17,62 @@ import {
   ChevronRight,
   Bell,
   Briefcase,
+  Users2,
 } from "lucide-react";
 
-export function EmployerSidebar({ user, onLogout }) {
+export function EmployerSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const userId = user?._id || user?.id;
+  const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
+
+  // ─── Fetch total unread count from conversations ───
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchUnread = async () => {
+      try {
+        const res = await apiClient.get(`/message/conversations/${userId}`);
+        const conversations = res.data?.conversations || [];
+        const total = conversations.reduce((sum, c) => {
+          const isParticipant1 = c.participant1Id === userId || c.participant1Id?._id === userId;
+          return sum + (isParticipant1 ? (c.unreadCount1 || 0) : (c.unreadCount2 || 0));
+        }, 0);
+        setUnreadCount(total);
+      } catch {
+        // silently fail
+      }
+    };
+
+    fetchUnread();
+
+    // ─── Real-time socket updates ───
+    const socket = io(SOCKET_URL, { auth: { userId }, transports: ['websocket'] });
+
+    socket.on('unread_count_updated', () => fetchUnread());
+    socket.on('receive_message', () => fetchUnread());
+    socket.on('message_read_receipt', () => fetchUnread());
+
+    return () => {
+      socket.off('unread_count_updated');
+      socket.off('receive_message');
+      socket.off('message_read_receipt');
+      socket.disconnect();
+    };
+  }, [userId]);
+
+  const messageBadge = unreadCount > 0
+    ? (unreadCount > 99 ? '99+' : String(unreadCount))
+    : null;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   const menuItems = [
     {
@@ -36,13 +91,19 @@ export function EmployerSidebar({ user, onLogout }) {
       path: "/employer-dashboard/applications",
       icon: FileText,
       label: "Applications",
-      badge: "23",
+      badge: null,
+    },
+    {
+      path: "/employer-dashboard/people",
+      icon: Users2,
+      label: "People",
+      badge: null,
     },
     {
       path: "/employer-dashboard/messages",
       icon: MessageSquare,
       label: "Messages",
-      badge: "7",
+      badge: messageBadge,
     },
     {
       path: "/employer-dashboard/plans",
@@ -53,10 +114,13 @@ export function EmployerSidebar({ user, onLogout }) {
   ];
 
   return (
-    <div
-      className={`bg-sidebar border-r border-sidebar-border transition-all duration-300 ${
-        collapsed ? "w-16" : "w-64"
+    <motion.div
+      className={`bg-sidebar border-r border-sidebar-border flex flex-col h-full overflow-hidden ${
+        collapsed ? 'w-16' : 'w-64'
       }`}
+      initial={{ x: -60, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 280, damping: 28 }}
     >
       <div className="flex flex-col h-full">
         {/* Header */}
@@ -152,7 +216,7 @@ export function EmployerSidebar({ user, onLogout }) {
           <div className="px-2 pb-4">
             <Button
               variant="ghost"
-              onClick={onLogout}
+              onClick={handleLogout}
               className={`w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground gap-3 border-none px-3 py-2 h-auto ${
                 collapsed ? "px-3" : ""
               }`}
@@ -163,7 +227,7 @@ export function EmployerSidebar({ user, onLogout }) {
           </div>
         </nav>
       </div>
-    </div>
+    </motion.div>
   );
 }
 export default EmployerSidebar;

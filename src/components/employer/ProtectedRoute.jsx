@@ -1,7 +1,8 @@
 import { Navigate } from 'react-router-dom';
+import useAuthStore from '../../store/authStore';
 
 export function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('token');
+  const { token, isAuthenticated } = useAuthStore();
 
   const isValidJWT = token && typeof token === 'string' && token.split('.').length === 3;
 

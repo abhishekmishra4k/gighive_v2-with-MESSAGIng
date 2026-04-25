@@ -343,7 +343,7 @@
 // export default Dashboard;
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import apiClient from "../../lib/apiClient";
 import { useNavigate, useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
 import {
@@ -405,20 +405,6 @@ const Dashboard = ({ user }) => {
 
     if (!user?.id) return;
 
-    const token = localStorage.getItem("token");
-
-    const axiosInstance = axios.create({
-      baseURL: API_URL,
-      withCredentials: true,
-    });
-
-    axiosInstance.interceptors.request.use((config) => {
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
-
     const socket = io(API_URL, {
       auth: { userId: user?.id },
     });
@@ -428,10 +414,10 @@ const Dashboard = ({ user }) => {
     async function fetchDashboardData() {
       try {
         const [statsRes, gigsRes, appsRes, analyticsRes] = await Promise.all([
-          axiosInstance.get("/api/dashboard/stats"),
-          axiosInstance.get("/api/dashboard/gigs/active"),
-          axiosInstance.get("/api/dashboard/applications/recent"),
-          axiosInstance.get("/api/dashboard/analytics"),
+          apiClient.get("/dashboard/stats").catch(() => null),
+          apiClient.get("/dashboard/gigs/active").catch(() => null),
+          apiClient.get("/dashboard/applications/recent").catch(() => null),
+          apiClient.get("/dashboard/analytics").catch(() => null),
         ]);
         if (!mounted) return;
 

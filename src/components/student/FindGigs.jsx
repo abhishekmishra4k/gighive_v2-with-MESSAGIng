@@ -189,54 +189,105 @@
 // }
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
-import axios from "axios";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { useAuth } from "../../context/AuthContext";
+import apiClient from "../../lib/apiClient";
+import { toast } from "react-toastify";
 import {
   Search,
   Filter,
   MapPin,
   Clock,
-  DollarSign,
   Star,
   Bookmark,
-  Zap,
+  MessageSquare,
+  Loader2,
 } from "lucide-react";
 
-import { toast } from "react-toastify";
+export function FindGigs({ user: propUser }) {
+  const navigate = useNavigate();
+  const { user: authUser } = useAuth();
+  const user = authUser || propUser; // prefer auth context
 
-export function FindGigs({ user }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [gigs, setGigs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedGig, setSelectedGig] = useState(null);
   const [applicationMessage, setApplicationMessage] = useState("");
-  const handleApply = async (gigId) => {
-    try {
-      await axios.post(
-        `http://localhost:5001/api/gigs/${gigId}/apply`,
-        {
-          message: applicationMessage, // ✅ student's description
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+  const [messaging, setMessaging] = useState(false);
+  const [applying, setApplying] = useState(false);
 
+  // ─── Apply to a gig ───
+  const handleApply = async (gigId) => {
+    setApplying(true);
+    try {
+      // ✅ apiClient auto-injects token
+      await apiClient.post(`/gigs/${gigId}/apply`, {
+        message: applicationMessage,
+      });
       toast.success("Application submitted!");
       setApplicationMessage("");
       setSelectedGig(null);
     } catch (err) {
-      console.error("Apply error:", err);
       const errorMessage =
         err.response?.data?.msg ||
         err.response?.data?.message ||
         "Something went wrong. Please try again.";
       toast.error(errorMessage);
+    } finally {
+      setApplying(false);
+    }
+  };
+
+  // ─── Message the employer who posted this gig ───
+  const handleMessageEmployer = async (gig) => {
+    const myId = user?._id || user?.id;
+    const employerId = gig?.employer || gig?.employerId || gig?.createdBy;
+
+    if (!myId) {
+      toast.error("Please log in to send messages.");
+      return;
+    }
+    if (!employerId) {
+      toast.error("Cannot message this employer — employer ID not found.");
+      return;
+    }
+    if (myId === employerId) {
+      toast.info("This is your own gig.");
+      return;
+    }
+
+    setMessaging(true);
+    try {
+      const res = await apiClient.post('/message/conversations/start', {
+        initiatorId: myId,
+        recipientId: employerId,
+        gigId: gig._id || gig.id,
+      });
+
+      const conversation = res.data?.conversation;
+      if (!conversation) throw new Error('No conversation returned');
+
+      toast.success(`Opening chat with ${gig.company || 'Employer'}...`);
+      setSelectedGig(null);
+
+      // Navigate to messages with the conversation pre-selected
+      navigate('/student-dashboard/messages', {
+        state: {
+          openConversationId: conversation._id,
+          otherUser: conversation.participant1Id?._id === myId
+            ? conversation.participant2Id
+            : conversation.participant1Id,
+        },
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to start conversation');
+    } finally {
+      setMessaging(false);
     }
   };
 
@@ -244,9 +295,8 @@ export function FindGigs({ user }) {
   useEffect(() => {
     const fetchGigs = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/gigs");
-        const data = await res.json();
-        setGigs(data);
+        const res = await apiClient.get("/gigs");
+        setGigs(res.data);
       } catch (err) {
         console.error("❌ Failed to fetch gigs:", err);
       } finally {
@@ -581,7 +631,7 @@ export function FindGigs({ user }) {
             </div>
 
             {/* Footer (Fixed at Bottom) */}
-            <div className="p-8 bg-white border-t border-slate-100 flex gap-4">
+            <div className="p-8 bg-white border-t border-slate-100 flex gap-4 flex-wrap">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -592,11 +642,39 @@ export function FindGigs({ user }) {
               >
                 Close
               </Button>
+
+              {/* Message Employer button — only show if there's an employer to message */}
+              {(selectedGig?.employer || selectedGig?.employerId || selectedGig?.createdBy) && (
+                <Button
+                  variant="outline"
+                  onClick={() => handleMessageEmployer(selectedGig)}
+                  disabled={messaging}
+                  className="flex-1 h-14 rounded-2xl border-slate-200 text-slate-700 font-bold hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700"
+                >
+                  {messaging ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="animate-spin" size={16} /> Starting chat...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <MessageSquare size={16} /> Message Employer
+                    </span>
+                  )}
+                </Button>
+              )}
+
               <Button
                 onClick={() => handleApply(selectedGig._id || selectedGig.id)}
+                disabled={applying}
                 className="flex-[2] h-14 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold shadow-lg"
               >
-                Submit Application
+                {applying ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="animate-spin" size={16} /> Submitting...
+                  </span>
+                ) : (
+                  'Submit Application'
+                )}
               </Button>
             </div>
           </div>
