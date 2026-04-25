@@ -285,7 +285,6 @@ export function Messages() {
   const [showEmoji,      setShowEmoji]      = useState(false);
   const [showCompose,    setShowCompose]    = useState(false);
   const [showChatOnMobile, setShowChatOnMobile] = useState(false);
-  const [replyTo,        setReplyTo]        = useState(null);
 
   const chatEndRef  = useRef(null);
   const typingRef   = useRef(null);
