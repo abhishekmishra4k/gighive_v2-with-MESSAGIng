@@ -61,6 +61,10 @@ export function StudentSidebar() {
     // ─── Real-time socket updates ───
     const socket = io(SOCKET_URL, { auth: { userId }, transports: ['websocket'] });
 
+    socket.on('connect', () => {
+      socket.emit('user_connected', { userId, deviceType: 'desktop' });
+    });
+
     socket.on('unread_count_updated', ({ conversationId, unreadCount: delta }) => {
       // Re-fetch to get accurate total (simpler than tracking per-conversation state)
       fetchUnread();

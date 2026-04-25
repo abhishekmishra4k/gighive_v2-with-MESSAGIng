@@ -4829,25 +4829,62 @@
 }
 
 .dark {
-  --background: oklch(.145 0 0);
-  --foreground: oklch(.985 0 0);
-  --card: oklch(.145 0 0);
-  --card-foreground: oklch(.985 0 0);
-  --popover: oklch(.145 0 0);
-  --popover-foreground: oklch(.985 0 0);
-  --primary: oklch(.985 0 0);
-  --primary-foreground: oklch(.205 0 0);
-  --secondary: oklch(.269 0 0);
-  --secondary-foreground: oklch(.985 0 0);
-  --muted: oklch(.269 0 0);
-  --muted-foreground: oklch(.708 0 0);
-  --accent: oklch(.269 0 0);
-  --accent-foreground: oklch(.985 0 0);
-  --destructive: oklch(.396 .141 25.723);
-  --destructive-foreground: oklch(.637 .237 25.331);
-  --border: oklch(.269 0 0);
-  --input: oklch(.269 0 0);
-  --ring: oklch(.439 0 0);
+  --background: #050501;
+  --foreground: #fef3c7;
+  --card: #0c0c05;
+  --card-foreground: #fef3c7;
+  --popover: #0c0c05;
+  --popover-foreground: #fef3c7;
+  --primary: #fbbf24;
+  --primary-foreground: #000;
+  --secondary: #d97706;
+  --secondary-foreground: #fef3c7;
+  --muted: #1a1a08;
+  --muted-foreground: #a6a68c;
+  --accent: #fbbf2433;
+  --accent-foreground: #fbbf24;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #fef3c7;
+  --border: #2d2d14;
+  --input: #1a1a08;
+  --input-background: #1a1a08;
+  --ring: #fbbf24;
+  --sidebar: #050501;
+  --sidebar-foreground: #fef3c7;
+  --sidebar-primary: #fbbf24;
+  --sidebar-primary-foreground: #000;
+  --sidebar-accent: #1a1a08;
+  --sidebar-accent-foreground: #fbbf24;
+  --sidebar-border: #2d2d14;
+}
+
+.dark body {
+  background: radial-gradient(circle at top right, #2d2d0a, #050501);
+  background-attachment: fixed;
+  color: var(--foreground);
+}
+
+/* Yellowish Glow Utility */
+.dark .yellow-glow {
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+}
+
+.dark .yellow-border-glow {
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #050501;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #2d2d14;
+  border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #fbbf24;
+}
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --chart-1: oklch(.488 .243 264.376);

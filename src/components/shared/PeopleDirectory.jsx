@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import apiClient from '../../lib/apiClient';
+import { io } from 'socket.io-client';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
@@ -75,6 +76,23 @@ export function PeopleDirectory() {
   useEffect(() => {
     fetchUsers(query, roleFilter, page * PAGE_SIZE);
   }, [page]);
+
+  // ─── Real-time status updates ───
+  useEffect(() => {
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
+    const socket = io(SOCKET_URL, { auth: { userId: user?.id || user?._id }, transports: ['websocket'] });
+
+    socket.on('user_status_changed', ({ userId: uid, isOnline }) => {
+      setUsers(prev => prev.map(u => 
+        u._id === uid ? { ...u, isOnline } : u
+      ));
+    });
+
+    return () => {
+      socket.off('user_status_changed');
+      socket.disconnect();
+    };
+  }, [user]);
 
   const handleStartConversation = async (targetUser) => {
     const myId = user?._id || user?.id;

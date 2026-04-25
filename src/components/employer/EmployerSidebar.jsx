@@ -53,6 +53,10 @@ export function EmployerSidebar() {
     // ─── Real-time socket updates ───
     const socket = io(SOCKET_URL, { auth: { userId }, transports: ['websocket'] });
 
+    socket.on('connect', () => {
+      socket.emit('user_connected', { userId, deviceType: 'desktop' });
+    });
+
     socket.on('unread_count_updated', () => fetchUnread());
     socket.on('receive_message', () => fetchUnread());
     socket.on('message_read_receipt', () => fetchUnread());

@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
+import { useLayoutEffect } from 'react';
 
 // Layouts
 import { PublicLayout } from './components/layout/PublicLayout';
@@ -118,6 +119,11 @@ function AppRoutes() {
 }
 
 export default function App() {
+  useLayoutEffect(() => {
+    // Force dark mode active for the new yellowish theme
+    document.documentElement.classList.add('dark');
+  }, []);
+
   return (
     <AuthProvider>
       <Router>
