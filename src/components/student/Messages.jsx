@@ -910,7 +910,7 @@ export default function StudentMessages() {
                 </div>
               </div>
             )}
-          </Card>
+          </div>
         </div>
       </div>
     </>

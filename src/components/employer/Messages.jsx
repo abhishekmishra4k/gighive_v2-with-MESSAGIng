@@ -700,7 +700,7 @@ export function Messages() {
                 </div>
               </div>
             )}
-          </Card>
+          </div>
         </div>
       </div>
     </>
