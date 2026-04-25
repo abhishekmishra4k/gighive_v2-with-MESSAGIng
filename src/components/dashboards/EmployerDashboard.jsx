@@ -21,27 +21,29 @@ function EmployerDashboard() {
   const location = useLocation();
 
   return (
-    <div className="h-screen overflow-hidden bg-background flex flex-col md:flex-row">
-      {/* Mobile-only Nav */}
-      <MobileNav role="employer" />
-
+    <div className="flex min-h-screen bg-background overflow-hidden h-screen">
       {/* Desktop-only Sidebar */}
       <aside className="hidden md:flex h-full border-r shrink-0">
         <EmployerSidebar />
       </aside>
 
-      <main className="flex-1 min-w-0 h-full overflow-y-auto pt-16 md:pt-0 pb-20 md:pb-0">
-        <Routes>
-          <Route index                 element={<Navigate to="/employer-dashboard/dashboard" replace />} />
-          <Route path="dashboard"      element={<Dashboard user={user} />} />
-          <Route path="post-gig"       element={<PostGig user={user} />} />
-          <Route path="applications"   element={<Applications user={user} />} />
-          <Route path="messages/:userId" element={<Messages />} />
-          <Route path="messages"       element={<Messages />} />
-          <Route path="plans"          element={<Plans user={user} />} />
-          <Route path="people"         element={<PeopleDirectory />} />
-        </Routes>
-      </main>
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        {/* Mobile-only Nav (appears at top on mobile) */}
+        <MobileNav role="employer" />
+
+        <main className="flex-1 overflow-y-auto pt-16 md:pt-0">
+          <Routes>
+            <Route index element={<Navigate to="/employer-dashboard/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard user={user} />} />
+            <Route path="post-gig" element={<PostGig user={user} />} />
+            <Route path="applications" element={<Applications user={user} />} />
+            <Route path="messages/:userId" element={<Messages />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="plans" element={<Plans user={user} />} />
+            <Route path="people" element={<PeopleDirectory />} />
+          </Routes>
+        </main>
+      </div>
     </div>
   );
 }

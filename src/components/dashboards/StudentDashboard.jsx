@@ -25,16 +25,17 @@ export function StudentDashboard() {
   const location = useLocation();
 
   return (
-    <div className="h-screen overflow-hidden bg-background flex flex-col md:flex-row">
-      {/* Mobile-only Nav */}
-      <MobileNav role="student" />
-
+    <div className="flex min-h-screen bg-background overflow-hidden h-screen">
       {/* Desktop-only Sidebar */}
       <aside className="hidden md:flex h-full border-r shrink-0">
         <StudentSidebar />
       </aside>
 
-      <main className="flex-1 min-w-0 h-full overflow-y-auto pt-16 md:pt-0 pb-20 md:pb-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        {/* Mobile-only Nav */}
+        <MobileNav role="student" />
+
+        <main className="flex-1 overflow-y-auto pt-16 md:pt-0">
           <Routes>
             <Route index                 element={<Navigate to="/student-dashboard/dashboard" replace />} />
             <Route path="dashboard"      element={<Dashboard user={user} />} />
@@ -49,7 +50,8 @@ export function StudentDashboard() {
             <Route path="settings"       element={<Settings user={user} />} />
             <Route path="people"         element={<PeopleDirectory />} />
           </Routes>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

@@ -15,18 +15,20 @@ export function AdminDashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="h-screen overflow-hidden bg-background flex">
+    <div className="flex h-screen bg-background overflow-hidden">
       <AdminSidebar />
 
-      <main className="flex-1 h-full overflow-y-auto">
-        <Routes>
-          <Route index              element={<Navigate to="/admin-dashboard/dashboard" replace />} />
-          <Route path="dashboard"   element={<Dashboard user={user} />} />
-          <Route path="students"    element={<Students user={user} />} />
-          <Route path="employers"   element={<Employers user={user} />} />
-          <Route path="gigs"        element={<Gigs user={user} />} />
-        </Routes>
-      </main>
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        <main className="flex-1 overflow-y-auto">
+          <Routes>
+            <Route index              element={<Navigate to="/admin-dashboard/dashboard" replace />} />
+            <Route path="dashboard"   element={<Dashboard user={user} />} />
+            <Route path="students"    element={<Students user={user} />} />
+            <Route path="employers"   element={<Employers user={user} />} />
+            <Route path="gigs"        element={<Gigs user={user} />} />
+          </Routes>
+        </main>
+      </div>
     </div>
   );
 }
