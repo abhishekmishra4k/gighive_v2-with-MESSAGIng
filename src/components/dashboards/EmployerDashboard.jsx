@@ -31,18 +31,16 @@ function EmployerDashboard() {
       </div>
 
       <main className="flex-1 h-full overflow-y-auto pt-16 md:pt-0 pb-20 md:pb-0">
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/"              element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard"      element={<Dashboard user={user} />} />
-            <Route path="post-gig"       element={<PostGig user={user} />} />
-            <Route path="applications"   element={<Applications user={user} />} />
-            <Route path="messages/:userId" element={<Messages />} />
-            <Route path="messages"       element={<Messages />} />
-            <Route path="plans"          element={<Plans user={user} />} />
-            <Route path="people"         element={<PeopleDirectory />} />
-          </Routes>
-        </AnimatePresence>
+        <Routes>
+          <Route index                 element={<Navigate to="/employer-dashboard/dashboard" replace />} />
+          <Route path="dashboard"      element={<Dashboard user={user} />} />
+          <Route path="post-gig"       element={<PostGig user={user} />} />
+          <Route path="applications"   element={<Applications user={user} />} />
+          <Route path="messages/:userId" element={<Messages />} />
+          <Route path="messages"       element={<Messages />} />
+          <Route path="plans"          element={<Plans user={user} />} />
+          <Route path="people"         element={<PeopleDirectory />} />
+        </Routes>
       </main>
     </div>
   );

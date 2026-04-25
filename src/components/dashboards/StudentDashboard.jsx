@@ -34,10 +34,9 @@ export function StudentDashboard() {
         <StudentSidebar />
       </div>
 
-      <main className="flex-1 h-full overflow-y-auto pt-16 md:pt-0 pb-20 md:pb-0">
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/"              element={<Navigate to="find-gigs" replace />} />
+        <div className="flex-1 h-full overflow-y-auto pt-16 md:pt-0 pb-20 md:pb-0">
+          <Routes>
+            <Route index                 element={<Navigate to="/student-dashboard/dashboard" replace />} />
             <Route path="dashboard"      element={<Dashboard user={user} />} />
             <Route path="find-gigs"      element={<FindGigs user={user} />} />
             <Route path="gig-reels"      element={<GigReels user={user} />} />
@@ -50,8 +49,7 @@ export function StudentDashboard() {
             <Route path="settings"       element={<Settings user={user} />} />
             <Route path="people"         element={<PeopleDirectory />} />
           </Routes>
-        </AnimatePresence>
-      </main>
+        </div>
     </div>
   );
 }

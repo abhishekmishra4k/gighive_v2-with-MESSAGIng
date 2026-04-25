@@ -20,7 +20,7 @@ export function AdminDashboard() {
 
       <main className="flex-1 h-full overflow-y-auto">
         <Routes>
-          <Route path="/"           element={<Navigate to="dashboard" replace />} />
+          <Route index              element={<Navigate to="/admin-dashboard/dashboard" replace />} />
           <Route path="dashboard"   element={<Dashboard user={user} />} />
           <Route path="students"    element={<Students user={user} />} />
           <Route path="employers"   element={<Employers user={user} />} />
