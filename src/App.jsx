@@ -24,9 +24,7 @@ import { Signup } from './components/auth/Signup';
 
 // Protected Pages
 import { PostGig }     from './components/employer/PostGig';
-import Applications    from './components/employer/Applications.jsx';
 import { Profile }     from './components/student/Profile';
-import { Messages }    from './components/employer/Messages';
 
 // Dashboards
 import { StudentDashboard }  from './components/dashboards/StudentDashboard';
@@ -49,7 +47,7 @@ function AppRoutes() {
   const layoutKey = getLayoutKey(location.pathname);
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="wait">
       <Routes location={location} key={layoutKey}>
         {/* ─── Public Routes ─── */}
         <Route element={<PublicLayout />}>
@@ -59,16 +57,7 @@ function AppRoutes() {
           <Route path="/for-employers"  element={<ForEmployers />} />
           <Route path="/popular-gigs"   element={<PopularGigs />} />
           <Route path="/about-us"       element={<AboutUs />} />
-          <Route path="/applications"   element={<Applications />} />
           <Route path="/profile/:id"    element={<Profile />} />
-          <Route
-            path="/employer-dashboard/messages/:userId"
-            element={
-              <ProtectedRoute requiredRole="employer">
-                <Messages />
-              </ProtectedRoute>
-            }
-          />
         </Route>
 
         {/* ─── Auth Routes (redirect away if already logged in) ─── */}

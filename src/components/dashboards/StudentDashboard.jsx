@@ -34,21 +34,21 @@ export function StudentDashboard() {
         <StudentSidebar />
       </div>
 
-      <main className="flex-1 overflow-x-hidden pt-16 md:pt-0 pb-20 md:pb-0">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden pt-16 md:pt-0 pb-20 md:pb-0">
         <AnimatePresence mode="wait" initial={false}>
           <Routes location={location} key={location.pathname}>
-            <Route path="/"              element={<Navigate to="/student-dashboard/find-gigs" />} />
-            <Route path="/dashboard"     element={<Dashboard user={user} />} />
-            <Route path="/find-gigs"     element={<FindGigs user={user} />} />
-            <Route path="/gig-reels"     element={<GigReels user={user} />} />
-            <Route path="/college-gigs"  element={<CollegeGigs user={user} />} />
-            <Route path="/feed"          element={<Feed user={user} />} />
-            <Route path="/collaboration" element={<Collaboration user={user} />} />
-            <Route path="/messages"      element={<StudentMessages />} />
-            <Route path="/credits"       element={<Credits user={user} />} />
-            <Route path="/profile"       element={<Profile user={user} />} />
-            <Route path="/settings"      element={<Settings user={user} />} />
-            <Route path="/people"        element={<PeopleDirectory />} />
+            <Route path="/"              element={<Navigate to="find-gigs" replace />} />
+            <Route path="dashboard"      element={<Dashboard user={user} />} />
+            <Route path="find-gigs"      element={<FindGigs user={user} />} />
+            <Route path="gig-reels"      element={<GigReels user={user} />} />
+            <Route path="college-gigs"   element={<CollegeGigs user={user} />} />
+            <Route path="feed"           element={<Feed user={user} />} />
+            <Route path="collaboration"  element={<Collaboration user={user} />} />
+            <Route path="messages"       element={<StudentMessages />} />
+            <Route path="credits"        element={<Credits user={user} />} />
+            <Route path="profile"        element={<Profile user={user} />} />
+            <Route path="settings"       element={<Settings user={user} />} />
+            <Route path="people"         element={<PeopleDirectory />} />
           </Routes>
         </AnimatePresence>
       </main>

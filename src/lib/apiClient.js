@@ -75,8 +75,8 @@ apiClient.interceptors.response.use(
     }
 
     console.error(`❌ ${error.config?.method?.toUpperCase()} ${error.config?.url}`, {
-      status: error.response?.status,
-      message: error.response?.data?.msg || error.message,
+      status: error.response?.status || 'NETWORK_ERROR',
+      message: error.response?.data?.msg || error.response?.data?.error || error.message,
     });
 
     return Promise.reject(error);

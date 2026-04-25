@@ -30,17 +30,17 @@ function EmployerDashboard() {
         <EmployerSidebar />
       </div>
 
-      <main className="flex-1 overflow-x-hidden pt-16 md:pt-0 pb-20 md:pb-0">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden pt-16 md:pt-0 pb-20 md:pb-0">
         <AnimatePresence mode="wait" initial={false}>
           <Routes location={location} key={location.pathname}>
-            <Route path="/"              element={<Navigate to="/employer-dashboard/dashboard" />} />
-            <Route path="/dashboard"     element={<Dashboard user={user} />} />
-            <Route path="/post-gig"      element={<PostGig user={user} />} />
-            <Route path="/applications"  element={<Applications user={user} />} />
-            <Route path="/messages/:userId" element={<Messages />} />
-            <Route path="/messages"      element={<Messages />} />
-            <Route path="/plans"         element={<Plans user={user} />} />
-            <Route path="/people"        element={<PeopleDirectory />} />
+            <Route path="/"              element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard"      element={<Dashboard user={user} />} />
+            <Route path="post-gig"       element={<PostGig user={user} />} />
+            <Route path="applications"   element={<Applications user={user} />} />
+            <Route path="messages/:userId" element={<Messages />} />
+            <Route path="messages"       element={<Messages />} />
+            <Route path="plans"          element={<Plans user={user} />} />
+            <Route path="people"         element={<PeopleDirectory />} />
           </Routes>
         </AnimatePresence>
       </main>

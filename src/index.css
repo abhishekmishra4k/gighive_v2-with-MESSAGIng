@@ -4812,20 +4812,7 @@
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --ring: oklch(.708 0 0);
-  --chart-1: oklch(.646 .222 41.116);
-  --chart-2: oklch(.6 .118 184.704);
-  --chart-3: oklch(.398 .07 227.392);
-  --chart-4: oklch(.828 .189 84.429);
-  --chart-5: oklch(.769 .188 70.08);
   --radius: .625rem;
-  --sidebar: oklch(.985 0 0);
-  --sidebar-foreground: oklch(.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(.985 0 0);
-  --sidebar-accent: oklch(.97 0 0);
-  --sidebar-accent-foreground: oklch(.205 0 0);
-  --sidebar-border: oklch(.922 0 0);
-  --sidebar-ring: oklch(.708 0 0);
 }
 
 .dark {
@@ -4859,12 +4846,11 @@
 }
 
 .dark body {
-  background: radial-gradient(circle at top right, #2d2d0a, #050501);
+  background: radial-gradient(circle at top right, #2d2d0a, #050501) !important;
   background-attachment: fixed;
   color: var(--foreground);
 }
 
-/* Yellowish Glow Utility */
 .dark .yellow-glow {
   text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
 }
@@ -4885,22 +4871,7 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #fbbf24;
 }
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --chart-1: oklch(.488 .243 264.376);
-  --chart-2: oklch(.696 .17 162.48);
-  --chart-3: oklch(.769 .188 70.08);
-  --chart-4: oklch(.627 .265 303.9);
-  --chart-5: oklch(.645 .246 16.439);
-  --sidebar: oklch(.205 0 0);
-  --sidebar-foreground: oklch(.985 0 0);
-  --sidebar-primary: oklch(.488 .243 264.376);
-  --sidebar-primary-foreground: oklch(.985 0 0);
-  --sidebar-accent: oklch(.269 0 0);
-  --sidebar-accent-foreground: oklch(.985 0 0);
-  --sidebar-border: oklch(.269 0 0);
-  --sidebar-ring: oklch(.439 0 0);
-}
+
 
 html {
   font-size: var(--font-size);

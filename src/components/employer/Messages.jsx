@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 import {
   Search, Send, MoreVertical, Paperclip, Phone,
   Video, Loader2, MessageCircle, Smile, X,
-  Copy, Reply, Trash2, PenSquare
+  Copy, Reply, Trash2, PenSquare, ChevronLeft
 } from 'lucide-react';
 import { slideUp, staggerContainer, cardVariants } from '../../lib/animations';
 

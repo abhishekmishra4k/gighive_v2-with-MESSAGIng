@@ -403,10 +403,11 @@ const Dashboard = ({ user }) => {
       (typeof window !== "undefined" && window.REACT_APP_API_URL) ||
       "http://localhost:5001";
 
-    if (!user?.id) return;
+    const myId = user?.id || user?._id;
+    if (!myId) return;
 
     const socket = io(API_URL, {
-      auth: { userId: user?.id },
+      auth: { userId: myId },
     });
 
     let mounted = true;
