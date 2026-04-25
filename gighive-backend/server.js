@@ -211,8 +211,8 @@ io.on('connection', (socket) => {
         timestamp: message.createdAt
       });
 
-      // ✅ Deliver to RECEIVER in real-time
-      io.to(receiverId.toString()).emit('receive_message', {
+      // ✅ Deliver to everyone in the room (including other tabs of sender)
+      io.to(conversation._id.toString()).emit('receive_message', {
         _id: message._id,
         senderId,
         content: message.content,

@@ -57,7 +57,7 @@ export function SocketProvider({ children }) {
     return () => {
       newSocket.disconnect();
     };
-  }, [isAuthenticated, userId, location.pathname]); // Listen to pathname for smarter notifications
+  }, [isAuthenticated, userId]); // Only reconnect if auth state or user changes
 
   const playPing = () => {
     try {

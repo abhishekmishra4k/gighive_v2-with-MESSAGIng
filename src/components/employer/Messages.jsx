@@ -511,6 +511,11 @@ export function Messages() {
       replyTo: replyTo || null,
     };
     setMessages(prev => [...prev, tempMsg]);
+    setConversations(prev => prev.map(c => 
+      c._id?.toString() === selectedChat._id?.toString()
+        ? { ...c, lastMessage: text, lastMessageTime: new Date().toISOString() }
+        : c
+    ));
     setInputText('');
     setReplyTo(null);
     setShowEmoji(false);
