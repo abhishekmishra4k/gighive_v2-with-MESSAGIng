@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useSocket } from '../../context/SocketContext';
 import { useLocation, useNavigate } from 'react-router-dom';
-import apiClient from '../../lib/apiClient';
-import io from 'socket.io-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import EmojiPicker from 'emoji-picker-react';
 import { Card, CardContent } from '../ui/card';
@@ -17,25 +16,6 @@ import {
   Copy, Reply, Trash2, Edit3, PenSquare, ChevronLeft
 } from 'lucide-react';
 import { slideUp, staggerContainer, cardVariants } from '../../lib/animations';
-
-// ═══════════════════════════════════════════
-// 🔌 Socket singleton
-// ═══════════════════════════════════════════
-let _socket = null;
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
-
-function getSocket(userId) {
-  if (!_socket) {
-    _socket = io(SOCKET_URL, {
-      auth: { userId },
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: 10,
-    });
-  }
-  return _socket;
-}
 
 // ═══════════════════════════════════════════
 // 💬 Framer Motion Typing Indicator
@@ -330,15 +310,15 @@ export default function StudentMessages() {
   const chatEndRef   = useRef(null);
   const typingRef    = useRef(null);
   const emojiRef     = useRef(null);
-  const socket       = useRef(null);
+  const socket       = useSocket();
   const messagesContainerRef = useRef(null);
 
   // ─── Socket init ──────────────────────────
   useEffect(() => {
-    if (!userId) return;
-    socket.current = getSocket(userId);
-    return () => {};
-  }, [userId]);
+    if (!userId || !socket) return;
+    
+    // Joint logic for initial socket events if needed
+  }, [userId, socket]);
 
   // ─── Load conversations ───────────────────
   useEffect(() => {
@@ -353,7 +333,7 @@ export default function StudentMessages() {
   // ─── Select conversation ──────────────────
   const handleSelectChat = useCallback(async (conv) => {
     if (selectedChat?._id && socket.current) {
-      socket.current.emit('conversation_closed', { conversationId: selectedChat._id, userId });
+      socket.emit('conversation_closed', { conversationId: selectedChat._id, userId });
     }
     setSelectedChat(conv);
     setShowChatOnMobile(true);
@@ -362,7 +342,7 @@ export default function StudentMessages() {
     setReplyTo(null);
 
     if (socket.current) {
-      socket.current.emit('conversation_opened', { conversationId: conv._id, userId });
+      socket.emit('conversation_opened', { conversationId: conv._id, userId });
     }
 
     setMsgLoading(true);
@@ -529,7 +509,7 @@ export default function StudentMessages() {
   const handleInputChange = (e) => {
     setInputText(e.target.value);
     if (!selectedChat || !socket.current) return;
-    socket.current.emit('user_typing', { conversationId: selectedChat._id, userId, senderName: user?.name });
+    socket.emit('user_typing', { conversationId: selectedChat._id, userId, senderName: user?.name });
     clearTimeout(typingRef.current);
     typingRef.current = setTimeout(() => {
       socket.current?.emit('user_stopped_typing', { conversationId: selectedChat._id, userId });

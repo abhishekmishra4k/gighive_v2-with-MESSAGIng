@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { useAuth } from "../../context/AuthContext";
 import apiClient from "../../lib/apiClient";
-import { io } from "socket.io-client";
+import { useSocket } from "../../context/SocketContext";
 import { useTheme } from "../../context/ThemeContext";
 import {
   Plus,
@@ -31,8 +31,7 @@ export function EmployerSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const userId = user?._id || user?.id;
-  const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
+  const socket = useSocket();
 
   // ─── Fetch total unread count from conversations ───
   useEffect(() => {
@@ -43,7 +42,9 @@ export function EmployerSidebar() {
         const res = await apiClient.get(`/message/conversations/${userId}`);
         const conversations = res.data?.conversations || [];
         const total = conversations.reduce((sum, c) => {
-          const isParticipant1 = c.participant1Id === userId || c.participant1Id?._id === userId;
+          const uId = userId.toString();
+          const p1Id = (c.participant1Id?._id || c.participant1Id || '').toString();
+          const isParticipant1 = p1Id === uId;
           return sum + (isParticipant1 ? (c.unreadCount1 || 0) : (c.unreadCount2 || 0));
         }, 0);
         setUnreadCount(total);
@@ -54,24 +55,18 @@ export function EmployerSidebar() {
 
     fetchUnread();
 
-    // ─── Real-time socket updates ───
-    const socket = io(SOCKET_URL, { auth: { userId }, transports: ['websocket'] });
+    if (!socket) return;
 
-    socket.on('connect', () => {
-      socket.emit('user_connected', { userId, deviceType: 'desktop' });
-    });
-
-    socket.on('unread_count_updated', () => fetchUnread());
-    socket.on('receive_message', () => fetchUnread());
-    socket.on('message_read_receipt', () => fetchUnread());
+    socket.on('unread_count_updated', fetchUnread);
+    socket.on('receive_message', fetchUnread);
+    socket.on('message_read_receipt', fetchUnread);
 
     return () => {
-      socket.off('unread_count_updated');
-      socket.off('receive_message');
-      socket.off('message_read_receipt');
-      socket.disconnect();
+      socket.off('unread_count_updated', fetchUnread);
+      socket.off('receive_message', fetchUnread);
+      socket.off('message_read_receipt', fetchUnread);
     };
-  }, [userId]);
+  }, [userId, socket]);
 
   const messageBadge = unreadCount > 0
     ? (unreadCount > 99 ? '99+' : String(unreadCount))

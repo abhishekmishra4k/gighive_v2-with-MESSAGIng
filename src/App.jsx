@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { SocketProvider } from './context/SocketContext';
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
 import { useLayoutEffect } from 'react';
 
@@ -113,8 +114,10 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <Router>
-          <AppRoutes />
-          <ToastContainer position="top-right" autoClose={3000} />
+          <SocketProvider>
+            <AppRoutes />
+            <ToastContainer position="top-right" autoClose={3000} />
+          </SocketProvider>
         </Router>
       </AuthProvider>
     </ThemeProvider>
