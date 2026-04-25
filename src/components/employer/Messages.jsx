@@ -378,11 +378,19 @@ export function Messages() {
       ));
     };
 
-    const onMessageSent  = (msg) => setMessages(prev => prev.map(m => m._id === msg.tempId ? { ...m, ...msg } : m));
-    const onUserTyping   = ({ userId: tid, name, isTyping }) => {
+    const onMessageSent = (msg) => {
+      setMessages(prev => prev.map(m => (m._id === msg.tempId || m.tempId === msg.tempId) ? { ...m, ...msg, status: 'sent', _id: msg._id } : m));
+    };
+
+    const onMessageError = ({ error, tempId }) => {
+      toast.error(`Error: ${error}`);
+      setMessages(prev => prev.map(m => (m._id === tempId || m.tempId === tempId) ? { ...m, status: 'error' } : m));
+    };
+
+    const onUserTyping = ({ userId: tid, senderName, isTyping }) => {
       if (tid === userId) return;
       setTypingUsers(prev => {
-        if (isTyping) return { ...prev, [tid]: name || 'Someone' };
+        if (isTyping) return { ...prev, [tid]: senderName || 'Someone' };
         const next = { ...prev }; delete next[tid]; return next;
       });
     };
@@ -391,11 +399,11 @@ export function Messages() {
     const onStatusChanged = ({ userId: uid, isOnline }) => {
       setConversations(prev => prev.map(c => c.otherUser?._id?.toString() === uid?.toString() ? { ...c, isOnline } : c));
       setSelectedChat(prev => prev?.otherUser?._id?.toString() === uid?.toString() ? { ...prev, isOnline } : prev);
-    };
     const onReactionUpdated = ({ messageId, reactions }) => setMessages(prev => prev.map(m => m._id?.toString() === messageId?.toString() ? { ...m, reactions } : m));
 
     s.on('receive_message',      onReceiveMessage);
     s.on('message_sent',         onMessageSent);
+    s.on('message_error',        onMessageError);
     s.on('user_typing',          onUserTyping);
     s.on('message_read_receipt', onReadReceipt);
     s.on('unread_count_updated', onUnreadUpdated);
@@ -403,15 +411,16 @@ export function Messages() {
     s.on('reaction_updated',     onReactionUpdated);
 
     return () => {
-      s.off('receive_message');
-      s.off('message_sent');
-      s.off('user_typing');
-      s.off('message_read_receipt');
-      s.off('unread_count_updated');
-      s.off('user_status_changed');
-      s.off('reaction_updated');
+      s.off('receive_message',      onReceiveMessage);
+      s.off('message_sent',         onMessageSent);
+      s.off('message_error',        onMessageError);
+      s.off('user_typing',          onUserTyping);
+      s.off('message_read_receipt', onReadReceipt);
+      s.off('unread_count_updated', onUnreadUpdated);
+      s.off('user_status_changed',  onStatusChanged);
+      s.off('reaction_updated',     onReactionUpdated);
     };
-  }, [selectedChat, userId]);
+  }, [socket, selectedChat, userId]);
 
   useEffect(() => {
     const container = messagesContainerRef.current;

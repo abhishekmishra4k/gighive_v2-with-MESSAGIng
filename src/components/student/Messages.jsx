@@ -420,13 +420,29 @@ export default function StudentMessages() {
     };
 
     const onMessageSent = (msg) => {
-      setMessages(prev => prev.map(m => (m._id === msg.tempId) ? { ...m, ...msg } : m));
+      console.log('✅ Message confirmed by server:', msg.tempId, msg._id);
+      setMessages(prev => prev.map(m => {
+        // Match by tempId
+        if (m._id === msg.tempId || (m.tempId && m.tempId === msg.tempId)) {
+          return { ...m, ...msg, status: 'sent', _id: msg._id };
+        }
+        return m;
+      }));
     };
 
-    const onUserTyping = ({ userId: typingId, name, isTyping }) => {
+    const onMessageError = ({ error, tempId }) => {
+      console.error('❌ Message error:', error, tempId);
+      toast.error(`Failed to send: ${error}`);
+      setMessages(prev => prev.map(m => 
+        (m._id === tempId) ? { ...m, status: 'error' } : m
+      ));
+    };
+
+    const onUserTyping = ({ userId: typingId, senderName, isTyping }) => {
       if (typingId === userId) return;
+      console.log('⌨️ Typing update:', typingId, isTyping);
       setTypingUsers(prev => {
-        if (isTyping) return { ...prev, [typingId]: name || 'Someone' };
+        if (isTyping) return { ...prev, [typingId]: senderName || 'Someone' };
         const next = { ...prev };
         delete next[typingId];
         return next;
@@ -527,6 +543,7 @@ export default function StudentMessages() {
     const tempId = `temp_${Date.now()}`;
     const tempMsg = {
       _id: tempId,
+      tempId: tempId, // explicitly store for matching
       content: text,
       senderId: userId,
       receiverId: selectedChat.otherUser?._id,
@@ -543,6 +560,11 @@ export default function StudentMessages() {
     
     // Force scroll down when sending a message
     setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+
+    if (!socket || !socket.connected) {
+      console.warn('⚠️ Socket not connected, message might fail');
+      toast.warning('Connection unstable. Retrying...');
+    }
 
     socket?.emit('user_stopped_typing', { conversationId: selectedChat._id, userId });
 
